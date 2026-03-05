@@ -158,7 +158,7 @@ def _render_segments_md(segments: list[Segment]) -> str:
     for s in segments:
         text = s["text"]
         if s["superscript"]:
-            text = f"^{text}^"
+            text = f"<sup>{text}</sup>"
         if s["italic"]:
             text = f"*{text}*"
         if s["bold"]:
