@@ -138,7 +138,7 @@ warning，避免重复：
 5. DOI 单独作为一个带 `url` 的 Segment
 6. 根据 `output_format` 渲染：
    - `"word"` → 直接返回 Segment 列表（writer.py 自己处理样式）
-   - `"markdown"` → `_render_segments_md()`：bold → `**...**`，italic → `*...*`，superscript → `<sup>...</sup>`，underline → `<u>...</u>`，url → `[text](url)`；DOI 拆成两个 segment：`doi:` 纯文字 + DOI 号码带 url
+   - `"markdown"` → `_render_segments_md()`：bold → `**...**`，italic → `*...*`，superscript → `<sup>...</sup>`（`*`/`_` 转义为 HTML entity 避免被解析为斜体），underline → `<ins>...</ins>`（GitHub 白名单不含 `<u>`），url → `[text](url)`；DOI 拆成两个 segment：`doi:` 纯文字 + DOI 号码带 url
    - `"latex"` → `_render_segments_tex()`：bold → `\textbf{}`，italic → `\textit{}`，superscript → `$^{}$`，underline → `\underline{}`
 
 ---
