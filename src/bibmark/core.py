@@ -5,12 +5,13 @@ Pipeline: parse → format → write.
 import os
 
 from .formatter import format_citation
-from .parser import parse_bib_file
+from .parser import parse_bib
 from .writer import write_docx, write_md, write_tex
 
 
 def generate_citations(
-    bib_files: list[str],
+    bib_file: str,
+    cite_keys: list[str],
     my_name: str,
     annotation_map: dict,
     superscript: bool = True,
@@ -18,12 +19,14 @@ def generate_citations(
     formats: list[str] = ("docx", "md", "tex"),
 ):
     """
-    Generate citation output files from an ordered list of .bib files.
+    Generate citation output files from a .bib file.
 
     Parameters
     ----------
-    bib_files : list[str]
-        Ordered list of .bib file paths. Citations are output in this order.
+    bib_file : str
+        Path to the .bib file containing all entries.
+    cite_keys : list[str]
+        Cite keys specifying which entries to include and in what order.
     my_name : str
         Your full name as it appears in bib author fields. Rendered in bold.
     annotation_map : dict
@@ -38,7 +41,7 @@ def generate_citations(
     """
     os.makedirs(output_dir, exist_ok=True)
 
-    entries = [parse_bib_file(p) for p in bib_files]
+    entries = parse_bib(bib_file, cite_keys)
 
     if "docx" in formats:
         write_docx(

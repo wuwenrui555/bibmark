@@ -8,31 +8,40 @@ import sys
 import bibtexparser
 
 
-def parse_bib_file(path: str):
+def parse_bib(path: str, keys: list[str]) -> list:
     """
-    Parse a single .bib file and return the first entry.
+    Parse a .bib file and return entries in the order specified by keys.
 
     Parameters
     ----------
     path : str
         Path to the .bib file.
+    keys : list[str]
+        Cite keys specifying which entries to return and in what order.
 
     Returns
     -------
-    bibtexparser.model.Entry
-        The first entry found in the file.
+    list[bibtexparser.model.Entry]
+        Entries in the same order as keys. Missing keys are warned and skipped.
 
     Raises
     ------
     ValueError
-        If no entries are found in the file.
+        If the file contains no entries.
     """
     library = bibtexparser.parse_file(path)
     if library.failed_blocks:
         print(f"WARNING: failed to parse some blocks in {path}", file=sys.stderr)
     if not library.entries:
         raise ValueError(f"No entries found in {path}")
-    return library.entries[0]
+    entries_by_key = {e.key: e for e in library.entries}
+    result = []
+    for key in keys:
+        if key not in entries_by_key:
+            print(f"WARNING: cite key '{key}' not found in {path}", file=sys.stderr)
+        else:
+            result.append(entries_by_key[key])
+    return result
 
 
 def parse_bibmark_field(value: str, cite_key: str, annotation_map: dict) -> dict:

@@ -2,12 +2,11 @@
 
 from bibmark import generate_citations
 
-bib_files = [
-    "huang2022kidney.bib",
-]
-
 generate_citations(
-    bib_files=bib_files,
+    bib_file="publications.bib",
+    cite_keys=[
+        "huang2022kidney",
+    ],
     my_name="Wenrui Wu",
     annotation_map={
         "first":         "#",
