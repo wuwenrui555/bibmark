@@ -7,6 +7,7 @@ with support for custom author-role annotations (co-first, corresponding, etc.).
 
 ## Table of Contents
 
+- [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
 - [.bib File Format](#bib-file-format)
@@ -54,14 +55,11 @@ from bibmark import generate_citations
 generate_citations(
     bib_file="publications.bib",
     cite_keys=[
-        "huang2022kidney",
-        "wu2023tls",
+        "wu2022epletpredicted",
+        "huang2022single",
     ],
     my_name="Wenrui Wu",
-    annotation_map={
-        "first":         "#",
-        "corresponding": "*",
-    },
+    annotation_map={"first": "#", "corresponding": "*"},
     superscript=True,
     output_dir="output",
 )
@@ -85,7 +83,7 @@ generate_citations(
     bib_file="publications.bib",
     cite_keys={
         "2025": ["huang2025effect"],
-        "2024": ["zhang2024ccl19producing", "feng2024timerestricted"],
+        "2024": ["zhang2024ccl19producing", "zhang2024effectiveness"],
         "2022": ["wu2022epletpredicted", "huang2022single"],
     },
     my_name="Wenrui Wu",
@@ -100,16 +98,20 @@ Put all entries in a single `.bib` file. Use the custom `bibmark` field to encod
 author roles as 1-based (or negative) author indices:
 
 ```bibtex
-@article{huang2022kidney,
-  author  = {Mingchuan Huang and Wenrui Wu and Qiang Zhang and Jun Li and Xiaojun Su and Longshan Liu and Changxi Wang},
-  title   = {Single kidney transplantation from pediatric deceased donors in China},
-  journal = {Translational Pediatrics},
+@article{wu2022epletpredicted,
+  author  = {Wu, Wenrui and Zhang, Huanxi and Tan, Jinghong and Fu, Qian and Li, Jun
+             and Wu, Chenglin and Huang, Huiting and Xu, Bowen and Ling, Liuting
+             and Liu, Longshan and Su, Xiaojun and Wang, Changxi},
+  title   = {Eplet-Predicted Antigens: An Attempt to Introduce Eplets into
+             Unacceptable Antigen Determination and Calculated Panel-Reactive
+             Antibody Calculation Facilitating Kidney Allocation},
+  journal = {Diagnostics},
   year    = {2022},
-  volume  = {11},
-  number  = {11},
-  pages   = {1872885--1871885},
-  doi     = {10.21037/tp-22-547},
-  bibmark = {first: {1, 2, 3}, corresponding: {-3, -2, -1}}
+  volume  = {12},
+  number  = {12},
+  pages   = {2983},
+  doi     = {10.3390/diagnostics12122983},
+  bibmark = {first: {1, 2}, corresponding: {-2, -3}}
 }
 ```
 
@@ -138,10 +140,12 @@ field values. Truncated author lists ending with `and others` trigger a warning.
 
 ## 2022
 
-1. Mingchuan Huang^#^, **Wenrui Wu**^#^, Qiang Zhang^#^, Jun Li, Xiaojun Su^*^,
-Longshan Liu^*^, and Changxi Wang^*^. Single kidney transplantation ...
-*Translational Pediatrics*, 11(11):1872885–1871885, 2022,
-[doi:10.21037/tp-22-547](https://doi.org/10.21037/tp-22-547)
+1. **Wenrui Wu**^#^, Huanxi Zhang^#^, Jinghong Tan, Qian Fu, Jun Li, Chenglin Wu,
+Huiting Huang, Bowen Xu, Liuting Ling, Longshan Liu^*^, Xiaojun Su^*^, and Changxi Wang.
+Eplet-Predicted Antigens: An Attempt to Introduce Eplets into Unacceptable Antigen
+Determination and Calculated Panel-Reactive Antibody Calculation Facilitating Kidney
+Allocation. *Diagnostics*, 12(12):2983, 2022,
+[doi:10.3390/diagnostics12122983](https://doi.org/10.3390/diagnostics12122983)
 ```
 
 (Markdown shown; Word and LaTeX use equivalent native formatting.)
