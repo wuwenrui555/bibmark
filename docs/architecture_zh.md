@@ -2,11 +2,12 @@
 
 ## 整体流程
 
-你调用 `generate_citations()` 之后，代码做了三件事，按顺序串联：
+你调用 `generate_citations()` 之后，代码做了四件事，按顺序串联：
 
 ```plain
 publications.bib
     ↓  parser.py    — 读取和解析
+    ↓  core.py      — 验证字段，打印 warning
     ↓  formatter.py — 把数据格式化成引用文本
     ↓  writer.py    — 把文本写进文件
     ↓
@@ -34,7 +35,7 @@ entries_by_key = {e.key: e for e in library.entries}
 ```python
 entry.fields_dict["author"].value  # → "Wenrui Wu and San Zhang"
 entry.fields_dict["journal"].value # → "Cancer Cell"
-entry.fields_dict["bibmark"].value # → "first: {1, 2}, corresponding: {3}"
+entry.fields_dict["bibmark"].value # → "first: {1, 2}, corresponding: {-1}"
 ```
 
 ### `parse_bibmark_field(value, cite_key, annotation_map)`
@@ -42,17 +43,30 @@ entry.fields_dict["bibmark"].value # → "first: {1, 2}, corresponding: {3}"
 把 bibmark 字段的字符串解析成结构化的字典：
 
 ```plain
-"first: {1, 2}, corresponding: {3, 4}"
+"first: {1, 2}, corresponding: {-3, -2, -1}"
         ↓
-{"first": [1, 2], "corresponding": [3, 4]}
+{"first": [1, 2], "corresponding": [-3, -2, -1]}
 ```
 
-用正则表达式匹配 `key: {数字, 数字}` 这个模式。如果 key 不在 `annotation_map`
-里（比如你写了个 `typo: {1}`），会打印 warning。
+用正则表达式匹配 `key: {数字, 数字}` 这个模式，支持负数索引。如果 key 不在
+`annotation_map` 里（比如你写了个 `typo: {1}`），会打印 warning。
 
 ---
 
-## 第二步：`formatter.py` — 格式化引用
+## 第二步：`core.py` — 验证字段
+
+### `validate_entry(entry)`（定义在 `formatter.py`）
+
+在格式化之前，`core.py` 对每个 entry 调用一次 `validate_entry()`，集中打印所有
+warning，避免重复：
+
+- 缺少必填字段（`author`、`title`、`journal`、`year`、`volume`、`pages`、`doi`）→ warning
+- 缺少 `number` 字段 → warning（该字段可选，缺少时输出中不显示括号部分）
+- author 列表以 `others` 结尾（截断列表）→ warning
+
+---
+
+## 第三步：`formatter.py` — 格式化引用
 
 这是最复杂的一步。核心思想是**先不管输出格式，把引用拆成一个个带格式标记的
 "片段"（Segment），最后再按目标格式渲染**。
@@ -62,44 +76,66 @@ entry.fields_dict["bibmark"].value # → "first: {1, 2}, corresponding: {3}"
 一个 Segment 就是一个小字典：
 
 ```python
-{"text": "Wenrui Wu", "bold": True, "italic": False, "superscript": False}
+{"text": "Wenrui Wu", "bold": True, "italic": False, "superscript": False, "url": ""}
 ```
+
+`url` 字段用于 DOI 超链接，在 Markdown 渲染时生效（Word 和 LaTeX 暂不渲染链接）。
 
 整个引用是一个 Segment 列表，例如：
 
 ```python
 [
-  {"text": "Mingchuan Huang", "bold": False, "italic": False, "superscript": False},
-  {"text": "#",               "bold": False, "italic": False, "superscript": True },
-  {"text": ", ",              "bold": False, "italic": False, "superscript": False},
-  {"text": "Wenrui Wu",       "bold": True,  "italic": False, "superscript": False},  # my_name
-  {"text": "#",               "bold": False, "italic": False, "superscript": True },
+  {"text": "Mingchuan Huang", "bold": False, "italic": False, "superscript": False, "url": ""},
+  {"text": "#",               "bold": False, "italic": False, "superscript": True,  "url": ""},
+  {"text": ", ",              "bold": False, "italic": False, "superscript": False, "url": ""},
+  {"text": "Wenrui Wu",       "bold": True,  "italic": False, "superscript": False, "url": ""},  # my_name
+  {"text": "#",               "bold": False, "italic": False, "superscript": True,  "url": ""},
   # ...
-  {"text": "Cancer Cell",     "bold": False, "italic": True,  "superscript": False},
-  {"text": ", 41(3):123–145, 2023, doi:...", ...},
+  {"text": "Cancer Cell",     "bold": False, "italic": True,  "superscript": False, "url": ""},
+  {"text": ", 41(3):123–145, 2023, ", ...},
+  {"text": "doi:10.1234/abc", "bold": False, "italic": False, "superscript": False, "url": "https://doi.org/10.1234/abc"},
 ]
 ```
 
+### 辅助函数
+
+| 函数 | 作用 |
+|------|------|
+| `_strip_braces(value)` | 去除 LaTeX 保护花括号，如 `{{China}}` → `China` |
+| `_get_field(entry, key, cite_key)` | 取字段值（已去花括号），缺少时返回 `"???"` |
+| `_format_pages(pages)` | 把 `--` 替换为 en-dash `–` |
+| `_split_authors(author_str)` | 按 ` and ` 切开作者列表 |
+| `_normalize_author(author)` | `"Wu, Wenrui"` → `"Wenrui Wu"` |
+
 ### `format_citation()` 做了什么
 
-1. 从 entry 里取出 author 字符串，用 `_split_authors` 按 ` and ` 切开
-2. 用 `_normalize_author` 把 `"Wu, Wenrui"` 变成 `"Wenrui Wu"`
-3. 解析 bibmark 字段，知道哪些作者需要加注释符号（`#`、`*` 等）
-4. 遍历作者列表，逐个生成 Segment，同时：
+1. 取出 author 字符串，切开并规范化
+2. 解析 bibmark 字段，建立每个作者的注释符号列表
+   - 正索引：`1` = 第一作者，`2` = 第二作者，依此类推
+   - 负索引：`-1` = 最后一位，`-2` = 倒数第二位，方便标注通讯作者
+3. 遍历作者列表，逐个生成 Segment：
    - 如果是 `my_name`，加 `bold=True`
    - 如果有注释符号，根据 `superscript` 决定是否加 `superscript=True`
    - 最后一个作者前面加 `", and "`，其余加 `", "`
-5. 拼上 title、journal（italic）、volume/number/pages/year/doi
+4. 拼上 title、journal（italic）、volume/number/pages/year
+5. DOI 单独作为一个带 `url` 的 Segment
 6. 根据 `output_format` 渲染：
    - `"word"` → 直接返回 Segment 列表（writer.py 自己处理样式）
-   - `"markdown"` → `_render_segments_md()`，把 bold 变 `**...**`，superscript 变 `^...^`
-   - `"latex"` → `_render_segments_tex()`，把 bold 变 `\textbf{}`，superscript 变 `$^{}$`
+   - `"markdown"` → `_render_segments_md()`：bold → `**...**`，superscript → `^...^`，url → `[text](url)`
+   - `"latex"` → `_render_segments_tex()`：bold → `\textbf{}`，superscript → `$^{}$`
 
 ---
 
-## 第三步：`writer.py` — 写出文件
+## 第四步：`writer.py` — 写出文件
 
-三个 `write_*` 函数结构完全一样：把所有引用写进文件，每条之间空一行。
+三个 `write_*` 函数结构完全一样：先写 Bibliography 标题，再把所有引用写进文件，
+每条之间空一行。
+
+| 函数 | 标题格式 |
+|------|----------|
+| `write_docx` | `doc.add_heading("Bibliography", level=1)` |
+| `write_md` | `# Bibliography` |
+| `write_tex` | `\section*{Bibliography}` |
 
 Word 格式稍微特殊：逐个 Segment 创建 `Run` 对象，直接在 Run 上设置
 `.bold`、`.italic`、`.font.superscript`，python-docx 负责生成真正的 Word 格式。
@@ -123,8 +159,8 @@ Word 格式稍微特殊：逐个 Segment 创建 `Run` 对象，直接在 Run 上
 ```plain
 src/bibmark/
 ├── __init__.py   对外只暴露 generate_citations
-├── core.py       串联 parser → formatter → writer 的 pipeline
+├── core.py       串联 parser → validate → formatter → writer 的 pipeline
 ├── parser.py     读 .bib 文件，按 cite_keys 顺序返回 entries
-├── formatter.py  构建 Segment 列表，渲染成 md/tex/word 格式
+├── formatter.py  validate_entry 验证字段；构建 Segment 列表并渲染
 └── writer.py     把格式化结果写进 .docx/.md/.tex 文件
 ```
