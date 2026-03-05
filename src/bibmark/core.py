@@ -4,7 +4,7 @@ Pipeline: parse → format → write.
 
 import os
 
-from .formatter import format_citation
+from .formatter import format_citation, validate_entry
 from .parser import parse_bib
 from .writer import write_docx, write_md, write_tex
 
@@ -42,6 +42,9 @@ def generate_citations(
     os.makedirs(output_dir, exist_ok=True)
 
     entries = parse_bib(bib_file, cite_keys)
+
+    for entry in entries:
+        validate_entry(entry)
 
     if "docx" in formats:
         write_docx(

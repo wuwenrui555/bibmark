@@ -68,7 +68,6 @@ def _get_field(entry, key: str, cite_key: str) -> str:
     """
     val = entry.fields_dict.get(key)
     if val is None:
-        print(f"WARNING: missing {key} in {cite_key}", file=sys.stderr)
         return "???"
     return _strip_braces(str(val.value))
 
@@ -238,8 +237,6 @@ def format_citation(
     # --- Authors ---
     author_str = _get_field(entry, "author", cite_key)
     authors = [_normalize_author(a) for a in _split_authors(author_str)]
-    if any(a.lower() == "others" for a in authors):
-        print(f"WARNING: author list truncated with 'others' in {cite_key}", file=sys.stderr)
 
     # --- bibmark annotations ---
     bibmark_raw = fields.get("bibmark")
@@ -290,11 +287,7 @@ def format_citation(
     # --- Volume(Number):Pages, Year, doi:DOI ---
     volume = _get_field(entry, "volume", cite_key)
     number_val = entry.fields_dict.get("number")
-    if number_val is None:
-        print(f"WARNING: missing number in {cite_key}", file=sys.stderr)
-        number_str = ""
-    else:
-        number_str = f"({number_val.value})"
+    number_str = f"({number_val.value})" if number_val is not None else ""
     pages_raw = _get_field(entry, "pages", cite_key)
     pages = _format_pages(pages_raw)
     year = _get_field(entry, "year", cite_key)
@@ -313,3 +306,22 @@ def format_citation(
         raise ValueError(f"Unknown output_format: {output_format!r}")
 
 
+def validate_entry(entry) -> None:
+    """
+    Check an entry for missing or problematic fields and print warnings.
+
+    Parameters
+    ----------
+    entry : bibtexparser.model.Entry
+        Parsed bib entry to validate.
+    """
+    cite_key = entry.key
+    required = ["author", "title", "journal", "year", "volume", "pages", "doi"]
+    for field in required:
+        if entry.fields_dict.get(field) is None:
+            print(f"WARNING: missing {field} in {cite_key}", file=sys.stderr)
+    if entry.fields_dict.get("number") is None:
+        print(f"WARNING: missing number in {cite_key}", file=sys.stderr)
+    author_val = entry.fields_dict.get("author")
+    if author_val and "others" in str(author_val.value).lower():
+        print(f"WARNING: author list truncated with 'others' in {cite_key}", file=sys.stderr)
