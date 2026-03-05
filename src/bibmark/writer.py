@@ -34,26 +34,6 @@ def _build_legend_str(
     return "   ".join(parts)
 
 
-def _make_superscript_run(paragraph, text: str):
-    """
-    Add a superscript run to a python-docx paragraph.
-
-    Parameters
-    ----------
-    paragraph : docx.text.paragraph.Paragraph
-        The paragraph to append the run to.
-    text : str
-        The text content of the superscript run.
-
-    Returns
-    -------
-    docx.text.run.Run
-        The newly added run.
-    """
-    run = paragraph.add_run(text)
-    run.font.superscript = True
-    return run
-
 
 def write_docx(
     citations: list,
