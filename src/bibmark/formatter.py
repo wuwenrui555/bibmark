@@ -112,10 +112,10 @@ def _format_pages(pages: str) -> str:
 # Segment-based rendering
 # ---------------------------------------------------------------------------
 
-Segment = dict  # {"text": str, "bold": bool, "italic": bool, "superscript": bool}
+Segment = dict  # {"text": str, "bold": bool, "italic": bool, "superscript": bool, "underline": bool}
 
 
-def _seg(text: str, bold=False, italic=False, superscript=False, url="") -> Segment:
+def _seg(text: str, bold=False, italic=False, superscript=False, underline=False, url="") -> Segment:
     """
     Create a text segment with formatting flags.
 
@@ -129,13 +129,15 @@ def _seg(text: str, bold=False, italic=False, superscript=False, url="") -> Segm
         Whether the text is italic.
     superscript : bool, optional
         Whether the text is superscript.
+    underline : bool, optional
+        Whether the text is underlined.
 
     Returns
     -------
     Segment
-        Dict with keys ``text``, ``bold``, ``italic``, ``superscript``, ``url``.
+        Dict with keys ``text``, ``bold``, ``italic``, ``superscript``, ``underline``, ``url``.
     """
-    return {"text": text, "bold": bold, "italic": italic, "superscript": superscript, "url": url}
+    return {"text": text, "bold": bold, "italic": italic, "superscript": superscript, "underline": underline, "url": url}
 
 
 def _render_segments_md(segments: list[Segment]) -> str:
@@ -161,6 +163,8 @@ def _render_segments_md(segments: list[Segment]) -> str:
             text = f"*{text}*"
         if s["bold"]:
             text = f"**{text}**"
+        if s["underline"]:
+            text = f"<u>{text}</u>"
         if s["url"]:
             text = f"[{text}]({s['url']})"
         parts.append(text)
@@ -191,6 +195,8 @@ def _render_segments_tex(segments: list[Segment]) -> str:
             text = f"\\textit{{{text}}}"
         if s["bold"]:
             text = f"\\textbf{{{text}}}"
+        if s["underline"]:
+            text = f"\\underline{{{text}}}"
         parts.append(text)
     return "".join(parts)
 

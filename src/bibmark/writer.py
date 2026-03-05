@@ -30,6 +30,7 @@ def write_docx(sections: list[tuple[str | None, list]], output_path: str):
                 run = para.add_run(seg["text"])
                 run.bold = seg["bold"]
                 run.italic = seg["italic"]
+                run.underline = seg["underline"]
                 if seg["superscript"]:
                     run.font.superscript = True
     doc.save(output_path)
