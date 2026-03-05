@@ -305,7 +305,8 @@ def format_citation(
     doi = _get_field(entry, "doi", cite_key)
 
     segments.append(_seg(f", {volume}{number_str}:{pages}, {year}, "))
-    segments.append(_seg(f"doi:{doi}", url=f"https://doi.org/{doi}"))
+    segments.append(_seg("doi:"))
+    segments.append(_seg(doi, url=f"https://doi.org/{doi}"))
 
     if output_format == "word":
         return segments
