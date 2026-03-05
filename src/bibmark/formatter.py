@@ -219,6 +219,8 @@ def format_citation(
     # --- Authors ---
     author_str = _get_field(entry, "author", cite_key)
     authors = [_normalize_author(a) for a in _split_authors(author_str)]
+    if any(a.lower() == "others" for a in authors):
+        print(f"WARNING: author list truncated with 'others' in {cite_key}", file=sys.stderr)
 
     # --- bibmark annotations ---
     bibmark_raw = fields.get("bibmark")
@@ -268,13 +270,18 @@ def format_citation(
 
     # --- Volume(Number):Pages, Year, doi:DOI ---
     volume = _get_field(entry, "volume", cite_key)
-    number = _get_field(entry, "number", cite_key)
+    number_val = entry.fields_dict.get("number")
+    if number_val is None:
+        print(f"WARNING: missing number in {cite_key}", file=sys.stderr)
+        number_str = ""
+    else:
+        number_str = f"({number_val.value})"
     pages_raw = _get_field(entry, "pages", cite_key)
     pages = _format_pages(pages_raw)
     year = _get_field(entry, "year", cite_key)
     doi = _get_field(entry, "doi", cite_key)
 
-    body = f", {volume}({number}):{pages}, {year}, doi:{doi}"
+    body = f", {volume}{number_str}:{pages}, {year}, doi:{doi}"
     segments.append(_seg(body))
 
     if output_format == "word":
