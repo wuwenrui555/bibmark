@@ -98,11 +98,11 @@ at the end**.
 A Segment is a small dict:
 
 ```python
-{"text": "Wenrui Wu", "bold": True, "italic": False, "superscript": False, "url": ""}
+{"text": "Wenrui Wu", "bold": True, "italic": False, "superscript": False, "underline": True, "url": ""}
 ```
 
-The `url` field is used for DOI hyperlinks; it is rendered in Markdown output
-(Word and LaTeX do not render links).
+- `url` is used for DOI hyperlinks; rendered in Markdown only (Word and LaTeX do not render links).
+- `underline` is used to underline text; currently applied to `my_name`.
 
 A full citation is a list of Segments, for example:
 
@@ -137,15 +137,15 @@ A full citation is a list of Segments, for example:
    - Positive indices: `1` = first author, `2` = second, and so on
    - Negative indices: `-1` = last author, `-2` = second-to-last — convenient for corresponding authors
 3. Iterates over the author list and builds Segments one by one:
-   - If the name matches `my_name`, sets `bold=True`
+   - If the name matches `my_name`, sets `bold=True` and `underline=True`
    - If the author has an annotation symbol, sets `superscript=True` when applicable
    - Inserts `", and "` before the last author and `", "` between all others
-4. Appends title, journal (italic), and the volume/number/pages/year body
+4. Appends title, journal (bold italic), and the volume/number/pages/year body
 5. DOI is a separate Segment with a `url` field
 6. Renders according to `output_format`:
    - `"word"` → returns the Segment list as-is (writer.py applies the styling)
-   - `"markdown"` → `_render_segments_md()`: bold → `**...**`, superscript → `^...^`, url → `[text](url)`
-   - `"latex"` → `_render_segments_tex()`: bold → `\textbf{}`, superscript → `$^{}$`
+   - `"markdown"` → `_render_segments_md()`: bold → `**...**`, italic → `*...*`, superscript → `^...^`, underline → `<u>...</u>`, url → `[text](url)`
+   - `"latex"` → `_render_segments_tex()`: bold → `\textbf{}`, italic → `\textit{}`, superscript → `$^{}$`, underline → `\underline{}`
 
 ---
 

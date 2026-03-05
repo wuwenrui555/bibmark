@@ -92,10 +92,11 @@ warning，避免重复：
 一个 Segment 就是一个小字典：
 
 ```python
-{"text": "Wenrui Wu", "bold": True, "italic": False, "superscript": False, "url": ""}
+{"text": "Wenrui Wu", "bold": True, "italic": False, "superscript": False, "underline": True, "url": ""}
 ```
 
-`url` 字段用于 DOI 超链接，在 Markdown 渲染时生效（Word 和 LaTeX 暂不渲染链接）。
+- `url` 字段用于 DOI 超链接，在 Markdown 渲染时生效（Word 和 LaTeX 暂不渲染链接）
+- `underline` 字段用于下划线，目前用于高亮 `my_name`
 
 整个引用是一个 Segment 列表，例如：
 
@@ -130,15 +131,15 @@ warning，避免重复：
    - 正索引：`1` = 第一作者，`2` = 第二作者，依此类推
    - 负索引：`-1` = 最后一位，`-2` = 倒数第二位，方便标注通讯作者
 3. 遍历作者列表，逐个生成 Segment：
-   - 如果是 `my_name`，加 `bold=True`
+   - 如果是 `my_name`，加 `bold=True`、`underline=True`
    - 如果有注释符号，根据 `superscript` 决定是否加 `superscript=True`
    - 最后一个作者前面加 `", and "`，其余加 `", "`
-4. 拼上 title、journal（italic）、volume/number/pages/year
+4. 拼上 title、journal（bold + italic）、volume/number/pages/year
 5. DOI 单独作为一个带 `url` 的 Segment
 6. 根据 `output_format` 渲染：
    - `"word"` → 直接返回 Segment 列表（writer.py 自己处理样式）
-   - `"markdown"` → `_render_segments_md()`：bold → `**...**`，superscript → `^...^`，url → `[text](url)`
-   - `"latex"` → `_render_segments_tex()`：bold → `\textbf{}`，superscript → `$^{}$`
+   - `"markdown"` → `_render_segments_md()`：bold → `**...**`，italic → `*...*`，superscript → `^...^`，underline → `<u>...</u>`，url → `[text](url)`
+   - `"latex"` → `_render_segments_tex()`：bold → `\textbf{}`，italic → `\textit{}`，superscript → `$^{}$`，underline → `\underline{}`
 
 ---
 

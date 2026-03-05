@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.2.0] - 2026-03-05
+
+### Added
+
+- Grouped bibliography: `cite_keys` now accepts `dict[str, list[str]]` to
+  produce a sectioned output with a level-2 heading per group (Markdown `##`,
+  LaTeX `\subsection*`, Word Heading 2).
+- Per-section numbering: citations are numbered from 1 within each section, or
+  globally for flat lists.
+- Underline formatting support across all three output formats (Markdown:
+  `<u>…</u>`, LaTeX: `\underline{}`, Word: `run.underline`).
+- `my_name` is now rendered with underline in addition to bold.
+
+### Changed
+
+- Journal name is now rendered as bold italic (previously italic only).
+
+### Fixed
+
+- LaTeX output now includes a complete document wrapper (`\documentclass`,
+  `\usepackage`, `\begin{document}`, `\end{document}`) so the `.tex` file
+  compiles standalone out of the box.
+- Special LaTeX characters (`#`, `%`, `&`, `_`) in text content are now
+  properly escaped.
+- Paragraph indentation disabled in LaTeX output (`\setlength{\parindent}{0pt}`)
+  so all citation numbers align to the left margin.
+
+---
+
 ## [0.1.0] - 2026-03-05
 
 Initial release.
