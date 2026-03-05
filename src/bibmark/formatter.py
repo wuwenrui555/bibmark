@@ -253,8 +253,10 @@ def format_citation(
         if not symbol:
             continue
         for idx in indices:
-            if 1 <= idx <= len(authors):
+            if idx > 0 and idx <= len(authors):
                 author_annotations[idx - 1] += symbol
+            elif idx < 0 and abs(idx) <= len(authors):
+                author_annotations[idx] += symbol
 
     # --- Build author segments ---
     segments: list[Segment] = []
