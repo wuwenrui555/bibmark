@@ -5,17 +5,46 @@ with support for custom author-role annotations (co-first, corresponding, etc.).
 
 **[→ View Wenrui's Bibliography](examples/output/citations.md)**
 
-## Setup
+## Table of Contents
 
-Requires [uv](https://github.com/astral-sh/uv).
+- [Installation](#installation)
+- [Usage](#usage)
+- [.bib File Format](#bib-file-format)
+- [Field handling](#field-handling)
+- [Output Example](#output-example)
+
+## Introduction
+
+Academic CVs and grant applications often require a publication list that goes
+beyond what a reference manager can export out of the box. The standard BibTeX
+workflow gives you author names and journal metadata — but it knows nothing
+about *your role* in each paper.
+
+The missing pieces typically have to be added by hand:
+
+- **Co-first authorship** (`#`) and **corresponding authorship** (`*`) are
+  buried in the PDF or the journal webpage, not in any structured field of a
+  `.bib` file.
+- Every time you update your CV, you open each paper, check who shares first
+  authorship, and manually insert the superscript symbols — then repeat the
+  whole process for Word, Markdown, and LaTeX versions.
+- Your own name needs to be **bolded** to stand out, which is another
+  format-specific step that existing exporters don't handle.
+
+`bibmark` solves this by letting you encode author roles directly in the `.bib`
+file using a custom `bibmark` field, and then generating fully-formatted
+citation lists in all three formats from a single source of truth. Update your
+`.bib` once; every output stays in sync automatically.
+
+## Installation
 
 ```bash
-git clone <repo>
-cd bibmark
-uv sync
+pip install git+https://github.com/wenruiwu/bibmark.git
 ```
 
 ## Usage
+
+### Linear output
 
 Write a script that imports `generate_citations`:
 
@@ -41,7 +70,7 @@ generate_citations(
 Run it with:
 
 ```bash
-uv run python your_script.py
+python your_script.py
 ```
 
 This generates `output/citations.docx`, `output/citations.md`, and `output/citations.tex`.
@@ -116,15 +145,3 @@ Longshan Liu^*^, and Changxi Wang^*^. Single kidney transplantation ...
 ```
 
 (Markdown shown; Word and LaTeX use equivalent native formatting.)
-
-## `generate_citations` Parameters
-
-| Parameter | Type | Default | Description |
-| --------- | ---- | ------- | ----------- |
-| `bib_file` | `str` | — | Path to the `.bib` file |
-| `cite_keys` | `list[str]` or `dict[str, list[str]]` | — | Flat list for a simple bibliography; dict for grouped output with section headings |
-| `my_name` | `str` | — | Your name as it appears in bib author fields |
-| `annotation_map` | `dict` | — | Maps bibmark keys to symbols |
-| `superscript` | `bool` | `True` | Render symbols as superscript |
-| `output_dir` | `str` | `"."` | Output directory |
-| `formats` | `list[str]` | `("docx","md","tex")` | Which formats to generate |
