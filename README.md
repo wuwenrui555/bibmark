@@ -140,12 +140,12 @@ field values. Truncated author lists ending with `and others` trigger a warning.
 
 ## 2022
 
-1. **Wenrui Wu**^#^, Huanxi Zhang^#^, Jinghong Tan, Qian Fu, Jun Li, Chenglin Wu,
-Huiting Huang, Bowen Xu, Liuting Ling, Longshan Liu^*^, Xiaojun Su^*^, and Changxi Wang.
-Eplet-Predicted Antigens: An Attempt to Introduce Eplets into Unacceptable Antigen
-Determination and Calculated Panel-Reactive Antibody Calculation Facilitating Kidney
-Allocation. *Diagnostics*, 12(12):2983, 2022,
-[doi:10.3390/diagnostics12122983](https://doi.org/10.3390/diagnostics12122983)
+1. <u>**Wenrui Wu**</u><sup>#</sup>, Huanxi Zhang<sup>#</sup>, Jinghong Tan, Qian Fu,
+Jun Li, Chenglin Wu, Huiting Huang, Bowen Xu, Liuting Ling, Longshan Liu<sup>*</sup>,
+Xiaojun Su<sup>*</sup>, and Changxi Wang. Eplet-Predicted Antigens: An Attempt to
+Introduce Eplets into Unacceptable Antigen Determination and Calculated Panel-Reactive
+Antibody Calculation Facilitating Kidney Allocation. ***Diagnostics***, 12(12):2983,
+2022, doi:[10.3390/diagnostics12122983](https://doi.org/10.3390/diagnostics12122983)
 ```
 
 (Markdown shown; Word and LaTeX use equivalent native formatting.)
