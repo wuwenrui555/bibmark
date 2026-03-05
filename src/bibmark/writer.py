@@ -75,6 +75,7 @@ def write_tex(sections: list[tuple[str | None, list[str]]], output_path: str):
         f.write("\\usepackage[T1]{fontenc}\n")
         f.write("\\usepackage[utf8]{inputenc}\n")
         f.write("\\usepackage{hyperref}\n")
+        f.write("\\setlength{\\parindent}{0pt}\n")
         f.write("\\begin{document}\n\n")
         f.write("\\section*{Bibliography}\n\n")
         for heading, citations in sections:
