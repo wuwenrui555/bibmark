@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.1] - 2026-03-05
+
+### Fixed
+
+- Markdown superscript now uses `<sup>…</sup>` instead of `^…^` for
+  correct rendering on GitHub (CommonMark does not support `^text^`).
+- DOI in Markdown output is now formatted as `doi:[10.xxx/yyy](url)` so
+  that only the DOI number is hyperlinked, not the `doi:` prefix.
+
+---
+
 ## [0.2.0] - 2026-03-05
 
 ### Added
