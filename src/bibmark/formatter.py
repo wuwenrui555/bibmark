@@ -115,7 +115,7 @@ def _format_pages(pages: str) -> str:
 Segment = dict  # {"text": str, "bold": bool, "italic": bool, "superscript": bool}
 
 
-def _seg(text: str, bold=False, italic=False, superscript=False) -> Segment:
+def _seg(text: str, bold=False, italic=False, superscript=False, url="") -> Segment:
     """
     Create a text segment with formatting flags.
 
@@ -133,9 +133,9 @@ def _seg(text: str, bold=False, italic=False, superscript=False) -> Segment:
     Returns
     -------
     Segment
-        Dict with keys ``text``, ``bold``, ``italic``, ``superscript``.
+        Dict with keys ``text``, ``bold``, ``italic``, ``superscript``, ``url``.
     """
-    return {"text": text, "bold": bold, "italic": italic, "superscript": superscript}
+    return {"text": text, "bold": bold, "italic": italic, "superscript": superscript, "url": url}
 
 
 def _render_segments_md(segments: list[Segment]) -> str:
@@ -161,6 +161,8 @@ def _render_segments_md(segments: list[Segment]) -> str:
             text = f"*{text}*"
         if s["bold"]:
             text = f"**{text}**"
+        if s["url"]:
+            text = f"[{text}]({s['url']})"
         parts.append(text)
     return "".join(parts)
 
@@ -295,8 +297,8 @@ def format_citation(
     year = _get_field(entry, "year", cite_key)
     doi = _get_field(entry, "doi", cite_key)
 
-    body = f", {volume}{number_str}:{pages}, {year}, doi:{doi}"
-    segments.append(_seg(body))
+    segments.append(_seg(f", {volume}{number_str}:{pages}, {year}, "))
+    segments.append(_seg(f"doi:{doi}", url=f"https://doi.org/{doi}"))
 
     if output_format == "word":
         return segments
