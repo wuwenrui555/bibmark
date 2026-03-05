@@ -287,7 +287,7 @@ def format_citation(
 
     # --- Journal (italic) ---
     journal = _get_field(entry, "journal", cite_key)
-    segments.append(_seg(journal, italic=True))
+    segments.append(_seg(journal, bold=True, italic=True))
 
     # --- Volume(Number):Pages, Year, doi:DOI ---
     volume = _get_field(entry, "volume", cite_key)
