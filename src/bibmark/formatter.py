@@ -279,7 +279,7 @@ def format_citation(
             else:
                 segments.append(_seg(", "))
 
-        segments.append(_seg(name, bold=is_me))
+        segments.append(_seg(name, bold=is_me, underline=is_me))
 
         if annotation:
             if superscript:
