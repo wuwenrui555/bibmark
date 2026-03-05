@@ -13,10 +13,6 @@ generate_citations(
         "first":         "#",
         "corresponding": "*",
     },
-    legend_labels={
-        "first":         "Co-first author",
-        "corresponding": "Corresponding author",
-    },
     superscript=True,
     output_dir="output",
 )

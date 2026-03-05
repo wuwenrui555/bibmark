@@ -230,13 +230,10 @@ def format_citation(
 
     # Build per-author annotation list (list of symbol strings, "" if none)
     author_annotations: list[str] = [""] * len(authors)
-    used_keys: list[str] = []
     for key, indices in bibmark_dict.items():
         symbol = annotation_map.get(key, "")
         if not symbol:
             continue
-        if key not in used_keys:
-            used_keys.append(key)
         for idx in indices:
             if 1 <= idx <= len(authors):
                 author_annotations[idx - 1] += symbol
@@ -290,35 +287,3 @@ def format_citation(
         raise ValueError(f"Unknown output_format: {output_format!r}")
 
 
-def collect_used_keys(
-    entries,
-    annotation_map: dict,
-) -> list[str]:
-    """
-    Collect bibmark keys that are actually used across all entries.
-
-    Parameters
-    ----------
-    entries : list[bibtexparser.model.Entry]
-        Parsed bib entries.
-    annotation_map : dict
-        Maps bibmark keys to symbols. Only keys present here are collected.
-
-    Returns
-    -------
-    list[str]
-        Ordered list of used bibmark keys, in first-appearance order.
-    """
-    seen: list[str] = []
-    for entry in entries:
-        fields = entry.fields_dict
-        bibmark_raw = fields.get("bibmark")
-        if bibmark_raw is None:
-            continue
-        bibmark_dict = parse_bibmark_field(
-            str(bibmark_raw.value), entry.key, annotation_map
-        )
-        for key in bibmark_dict:
-            if key in annotation_map and key not in seen:
-                seen.append(key)
-    return seen
