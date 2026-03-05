@@ -23,8 +23,9 @@ def write_docx(sections: list[tuple[str | None, list]], output_path: str):
     for heading, citations in sections:
         if heading is not None:
             doc.add_heading(heading, level=2)
-        for segments in citations:
+        for i, segments in enumerate(citations, start=1):
             para = doc.add_paragraph()
+            para.add_run(f"{i}. ")
             for seg in segments:
                 run = para.add_run(seg["text"])
                 run.bold = seg["bold"]
@@ -52,8 +53,8 @@ def write_md(sections: list[tuple[str | None, list[str]]], output_path: str):
         for heading, citations in sections:
             if heading is not None:
                 f.write(f"## {heading}\n\n")
-            for citation in citations:
-                f.write(citation + "\n\n")
+            for i, citation in enumerate(citations, start=1):
+                f.write(f"{i}. {citation}\n\n")
 
 
 def write_tex(sections: list[tuple[str | None, list[str]]], output_path: str):
@@ -74,5 +75,5 @@ def write_tex(sections: list[tuple[str | None, list[str]]], output_path: str):
         for heading, citations in sections:
             if heading is not None:
                 f.write(f"\\subsection*{{{heading}}}\n\n")
-            for citation in citations:
-                f.write(citation + "\n\n")
+            for i, citation in enumerate(citations, start=1):
+                f.write(f"{i}. {citation}\n\n")
