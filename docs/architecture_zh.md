@@ -53,7 +53,23 @@ entry.fields_dict["bibmark"].value # → "first: {1, 2}, corresponding: {-1}"
 
 ---
 
-## 第二步：`core.py` — 验证字段
+## 第二步：`core.py` — 分组与验证
+
+`generate_citations()` 在这里把 `cite_keys` 统一转成 `sections`，再交给 writer：
+
+```python
+# list 输入：包成单一 section，heading 为 None
+sections = [(None, entries)]
+
+# dict 输入：展平所有 key 统一解析，再按分组重组
+all_keys = [k for keys in cite_keys.values() for k in keys]
+all_entries = parse_bib(bib_file, all_keys)
+entries_by_key = {e.key: e for e in all_entries}
+sections = [
+    (heading, [entries_by_key[k] for k in keys if k in entries_by_key])
+    for heading, keys in cite_keys.items()
+]
+```
 
 ### `validate_entry(entry)`（定义在 `formatter.py`）
 
@@ -76,10 +92,11 @@ warning，避免重复：
 一个 Segment 就是一个小字典：
 
 ```python
-{"text": "Wenrui Wu", "bold": True, "italic": False, "superscript": False, "url": ""}
+{"text": "Wenrui Wu", "bold": True, "italic": False, "superscript": False, "underline": True, "url": ""}
 ```
 
-`url` 字段用于 DOI 超链接，在 Markdown 渲染时生效（Word 和 LaTeX 暂不渲染链接）。
+- `url` 字段用于 DOI 超链接，在 Markdown 渲染时生效（Word 和 LaTeX 暂不渲染链接）
+- `underline` 字段用于下划线，目前用于高亮 `my_name`
 
 整个引用是一个 Segment 列表，例如：
 
@@ -114,31 +131,38 @@ warning，避免重复：
    - 正索引：`1` = 第一作者，`2` = 第二作者，依此类推
    - 负索引：`-1` = 最后一位，`-2` = 倒数第二位，方便标注通讯作者
 3. 遍历作者列表，逐个生成 Segment：
-   - 如果是 `my_name`，加 `bold=True`
+   - 如果是 `my_name`，加 `bold=True`、`underline=True`
    - 如果有注释符号，根据 `superscript` 决定是否加 `superscript=True`
    - 最后一个作者前面加 `", and "`，其余加 `", "`
-4. 拼上 title、journal（italic）、volume/number/pages/year
+4. 拼上 title、journal（bold + italic）、volume/number/pages/year
 5. DOI 单独作为一个带 `url` 的 Segment
 6. 根据 `output_format` 渲染：
    - `"word"` → 直接返回 Segment 列表（writer.py 自己处理样式）
-   - `"markdown"` → `_render_segments_md()`：bold → `**...**`，superscript → `^...^`，url → `[text](url)`
-   - `"latex"` → `_render_segments_tex()`：bold → `\textbf{}`，superscript → `$^{}$`
+   - `"markdown"` → `_render_segments_md()`：bold → `**...**`，italic → `*...*`，superscript → `^...^`，underline → `<u>...</u>`，url → `[text](url)`
+   - `"latex"` → `_render_segments_tex()`：bold → `\textbf{}`，italic → `\textit{}`，superscript → `$^{}$`，underline → `\underline{}`
 
 ---
 
 ## 第四步：`writer.py` — 写出文件
 
-三个 `write_*` 函数结构完全一样：先写 Bibliography 标题，再把所有引用写进文件，
-每条之间空一行。
+三个 `write_*` 函数的入参都是 `sections: list[tuple[str | None, list]]`，
+结构为 `(heading, citations)` 的列表。`core.py` 保证：
 
-| 函数 | 标题格式 |
-|------|----------|
-| `write_docx` | `doc.add_heading("Bibliography", level=1)` |
-| `write_md` | `# Bibliography` |
-| `write_tex` | `\section*{Bibliography}` |
+- `cite_keys` 是 list 时：`sections = [(None, all_citations)]`
+- `cite_keys` 是 dict 时：`sections = [("2025", [...]), ("2024", [...]), ...]`
 
-Word 格式稍微特殊：逐个 Segment 创建 `Run` 对象，直接在 Run 上设置
-`.bold`、`.italic`、`.font.superscript`，python-docx 负责生成真正的 Word 格式。
+写出逻辑：先写一级 Bibliography 标题，然后遍历 sections——
+如果 heading 不为 `None`，写二级标题；再逐条写引用，并在每条前加序号（`1.`、`2.`……），
+序号在每个 section 内独立从 1 开始。
+
+| 函数 | 一级标题 | 二级标题（分组时） |
+|------|----------|--------------------|
+| `write_docx` | `Heading 1` | `Heading 2` |
+| `write_md` | `# Bibliography` | `## <heading>` |
+| `write_tex` | `\section*{Bibliography}` | `\subsection*{<heading>}` |
+
+Word 格式稍微特殊：序号单独作为一个普通 Run 插入段落开头，之后逐个 Segment 创建
+Run 并设置 `.bold`、`.italic`、`.font.superscript`。
 
 ---
 

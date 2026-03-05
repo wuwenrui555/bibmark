@@ -112,10 +112,10 @@ def _format_pages(pages: str) -> str:
 # Segment-based rendering
 # ---------------------------------------------------------------------------
 
-Segment = dict  # {"text": str, "bold": bool, "italic": bool, "superscript": bool}
+Segment = dict  # {"text": str, "bold": bool, "italic": bool, "superscript": bool, "underline": bool}
 
 
-def _seg(text: str, bold=False, italic=False, superscript=False, url="") -> Segment:
+def _seg(text: str, bold=False, italic=False, superscript=False, underline=False, url="") -> Segment:
     """
     Create a text segment with formatting flags.
 
@@ -129,13 +129,15 @@ def _seg(text: str, bold=False, italic=False, superscript=False, url="") -> Segm
         Whether the text is italic.
     superscript : bool, optional
         Whether the text is superscript.
+    underline : bool, optional
+        Whether the text is underlined.
 
     Returns
     -------
     Segment
-        Dict with keys ``text``, ``bold``, ``italic``, ``superscript``, ``url``.
+        Dict with keys ``text``, ``bold``, ``italic``, ``superscript``, ``underline``, ``url``.
     """
-    return {"text": text, "bold": bold, "italic": italic, "superscript": superscript, "url": url}
+    return {"text": text, "bold": bold, "italic": italic, "superscript": superscript, "underline": underline, "url": url}
 
 
 def _render_segments_md(segments: list[Segment]) -> str:
@@ -161,6 +163,8 @@ def _render_segments_md(segments: list[Segment]) -> str:
             text = f"*{text}*"
         if s["bold"]:
             text = f"**{text}**"
+        if s["underline"]:
+            text = f"<u>{text}</u>"
         if s["url"]:
             text = f"[{text}]({s['url']})"
         parts.append(text)
@@ -181,15 +185,18 @@ def _render_segments_tex(segments: list[Segment]) -> str:
     str
         LaTeX-formatted citation string.
     """
+    _escape = str.maketrans({"#": r"\#", "%": r"\%", "&": r"\&", "_": r"\_"})
     parts = []
     for s in segments:
-        text = s["text"]
+        text = s["text"].translate(_escape)
         if s["superscript"]:
             text = f"$^{{{text}}}$"
         if s["italic"]:
             text = f"\\textit{{{text}}}"
         if s["bold"]:
             text = f"\\textbf{{{text}}}"
+        if s["underline"]:
+            text = f"\\underline{{{text}}}"
         parts.append(text)
     return "".join(parts)
 
@@ -272,7 +279,7 @@ def format_citation(
             else:
                 segments.append(_seg(", "))
 
-        segments.append(_seg(name, bold=is_me))
+        segments.append(_seg(name, bold=is_me, underline=is_me))
 
         if annotation:
             if superscript:
@@ -286,7 +293,7 @@ def format_citation(
 
     # --- Journal (italic) ---
     journal = _get_field(entry, "journal", cite_key)
-    segments.append(_seg(journal, italic=True))
+    segments.append(_seg(journal, bold=True, italic=True))
 
     # --- Volume(Number):Pages, Year, doi:DOI ---
     volume = _get_field(entry, "volume", cite_key)

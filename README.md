@@ -3,17 +3,49 @@
 Generate formatted citation lists (Word, Markdown, LaTeX) from a `.bib` file,
 with support for custom author-role annotations (co-first, corresponding, etc.).
 
-## Setup
+**[→ View Wenrui's Bibliography](examples/output/citations.md)**
 
-Requires [uv](https://github.com/astral-sh/uv).
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Usage](#usage)
+- [.bib File Format](#bib-file-format)
+- [Field handling](#field-handling)
+- [Output Example](#output-example)
+
+## Introduction
+
+Academic CVs and grant applications often require a publication list that goes
+beyond what a reference manager can export out of the box. The standard BibTeX
+workflow gives you author names and journal metadata — but it knows nothing
+about *your role* in each paper.
+
+The missing pieces typically have to be added by hand:
+
+- **Co-first authorship** (`#`) and **corresponding authorship** (`*`) are
+  buried in the PDF or the journal webpage, not in any structured field of a
+  `.bib` file.
+- Every time you update your CV, you open each paper, check who shares first
+  authorship, and manually insert the superscript symbols — then repeat the
+  whole process for Word, Markdown, and LaTeX versions.
+- Your own name needs to be **bolded** to stand out, which is another
+  format-specific step that existing exporters don't handle.
+
+`bibmark` solves this by letting you encode author roles directly in the `.bib`
+file using a custom `bibmark` field, and then generating fully-formatted
+citation lists in all three formats from a single source of truth. Update your
+`.bib` once; every output stays in sync automatically.
+
+## Installation
 
 ```bash
-git clone <repo>
-cd bibmark
-uv sync
+pip install git+https://github.com/wenruiwu/bibmark.git
 ```
 
 ## Usage
+
+### Linear output
 
 Write a script that imports `generate_citations`:
 
@@ -23,14 +55,11 @@ from bibmark import generate_citations
 generate_citations(
     bib_file="publications.bib",
     cite_keys=[
-        "huang2022kidney",
-        "wu2023tls",
+        "wu2022epletpredicted",
+        "huang2022single",
     ],
     my_name="Wenrui Wu",
-    annotation_map={
-        "first":         "#",
-        "corresponding": "*",
-    },
+    annotation_map={"first": "#", "corresponding": "*"},
     superscript=True,
     output_dir="output",
 )
@@ -39,10 +68,29 @@ generate_citations(
 Run it with:
 
 ```bash
-uv run python your_script.py
+python your_script.py
 ```
 
 This generates `output/citations.docx`, `output/citations.md`, and `output/citations.tex`.
+
+### Grouped output
+
+Pass a `dict` instead of a `list` to group citations under section headings.
+Each key becomes a level-2 heading; numbering restarts from 1 within each section.
+
+```python
+generate_citations(
+    bib_file="publications.bib",
+    cite_keys={
+        "2025": ["huang2025effect"],
+        "2024": ["zhang2024ccl19producing", "zhang2024effectiveness"],
+        "2022": ["wu2022epletpredicted", "huang2022single"],
+    },
+    my_name="Wenrui Wu",
+    annotation_map={"first": "#", "corresponding": "*"},
+    output_dir="output",
+)
+```
 
 ## .bib File Format
 
@@ -50,16 +98,20 @@ Put all entries in a single `.bib` file. Use the custom `bibmark` field to encod
 author roles as 1-based (or negative) author indices:
 
 ```bibtex
-@article{huang2022kidney,
-  author  = {Mingchuan Huang and Wenrui Wu and Qiang Zhang and Jun Li and Xiaojun Su and Longshan Liu and Changxi Wang},
-  title   = {Single kidney transplantation from pediatric deceased donors in China},
-  journal = {Translational Pediatrics},
+@article{wu2022epletpredicted,
+  author  = {Wu, Wenrui and Zhang, Huanxi and Tan, Jinghong and Fu, Qian and Li, Jun
+             and Wu, Chenglin and Huang, Huiting and Xu, Bowen and Ling, Liuting
+             and Liu, Longshan and Su, Xiaojun and Wang, Changxi},
+  title   = {Eplet-Predicted Antigens: An Attempt to Introduce Eplets into
+             Unacceptable Antigen Determination and Calculated Panel-Reactive
+             Antibody Calculation Facilitating Kidney Allocation},
+  journal = {Diagnostics},
   year    = {2022},
-  volume  = {11},
-  number  = {11},
-  pages   = {1872885--1871885},
-  doi     = {10.21037/tp-22-547},
-  bibmark = {first: {1, 2, 3}, corresponding: {-3, -2, -1}}
+  volume  = {12},
+  number  = {12},
+  pages   = {2983},
+  doi     = {10.3390/diagnostics12122983},
+  bibmark = {first: {1, 2}, corresponding: {-2, -3}}
 }
 ```
 
@@ -86,22 +138,14 @@ field values. Truncated author lists ending with `and others` trigger a warning.
 ```plain
 # Bibliography
 
-Mingchuan Huang^#^, **Wenrui Wu**^#^, Qiang Zhang^#^, Jun Li, Xiaojun Su^*^,
-Longshan Liu^*^, and Changxi Wang^*^. Single kidney transplantation ...
-***Translational Pediatrics***, 11(11):1872885–1871885, 2022,
-[doi:10.21037/tp-22-547](https://doi.org/10.21037/tp-22-547)
+## 2022
+
+1. **Wenrui Wu**^#^, Huanxi Zhang^#^, Jinghong Tan, Qian Fu, Jun Li, Chenglin Wu,
+Huiting Huang, Bowen Xu, Liuting Ling, Longshan Liu^*^, Xiaojun Su^*^, and Changxi Wang.
+Eplet-Predicted Antigens: An Attempt to Introduce Eplets into Unacceptable Antigen
+Determination and Calculated Panel-Reactive Antibody Calculation Facilitating Kidney
+Allocation. *Diagnostics*, 12(12):2983, 2022,
+[doi:10.3390/diagnostics12122983](https://doi.org/10.3390/diagnostics12122983)
 ```
 
 (Markdown shown; Word and LaTeX use equivalent native formatting.)
-
-## `generate_citations` Parameters
-
-| Parameter | Type | Default | Description |
-| --------- | ---- | ------- | ----------- |
-| `bib_file` | `str` | — | Path to the `.bib` file |
-| `cite_keys` | `list[str]` | — | Cite keys in the desired output order |
-| `my_name` | `str` | — | Your name as it appears in bib author fields |
-| `annotation_map` | `dict` | — | Maps bibmark keys to symbols |
-| `superscript` | `bool` | `True` | Render symbols as superscript |
-| `output_dir` | `str` | `"."` | Output directory |
-| `formats` | `list[str]` | `("docx","md","tex")` | Which formats to generate |

@@ -57,7 +57,24 @@ warning is printed to stderr.
 
 ---
 
-## Step 2: `core.py` — Validate entries
+## Step 2: `core.py` — Group and validate
+
+`generate_citations()` converts `cite_keys` into a uniform `sections` list
+before passing it to the writers:
+
+```python
+# list input: wrap as a single section with heading=None
+sections = [(None, entries)]
+
+# dict input: flatten all keys to parse at once, then re-group
+all_keys = [k for keys in cite_keys.values() for k in keys]
+all_entries = parse_bib(bib_file, all_keys)
+entries_by_key = {e.key: e for e in all_entries}
+sections = [
+    (heading, [entries_by_key[k] for k in keys if k in entries_by_key])
+    for heading, keys in cite_keys.items()
+]
+```
 
 ### `validate_entry(entry)` (defined in `formatter.py`)
 
@@ -81,11 +98,11 @@ at the end**.
 A Segment is a small dict:
 
 ```python
-{"text": "Wenrui Wu", "bold": True, "italic": False, "superscript": False, "url": ""}
+{"text": "Wenrui Wu", "bold": True, "italic": False, "superscript": False, "underline": True, "url": ""}
 ```
 
-The `url` field is used for DOI hyperlinks; it is rendered in Markdown output
-(Word and LaTeX do not render links).
+- `url` is used for DOI hyperlinks; rendered in Markdown only (Word and LaTeX do not render links).
+- `underline` is used to underline text; currently applied to `my_name`.
 
 A full citation is a list of Segments, for example:
 
@@ -120,32 +137,40 @@ A full citation is a list of Segments, for example:
    - Positive indices: `1` = first author, `2` = second, and so on
    - Negative indices: `-1` = last author, `-2` = second-to-last — convenient for corresponding authors
 3. Iterates over the author list and builds Segments one by one:
-   - If the name matches `my_name`, sets `bold=True`
+   - If the name matches `my_name`, sets `bold=True` and `underline=True`
    - If the author has an annotation symbol, sets `superscript=True` when applicable
    - Inserts `", and "` before the last author and `", "` between all others
-4. Appends title, journal (italic), and the volume/number/pages/year body
+4. Appends title, journal (bold italic), and the volume/number/pages/year body
 5. DOI is a separate Segment with a `url` field
 6. Renders according to `output_format`:
    - `"word"` → returns the Segment list as-is (writer.py applies the styling)
-   - `"markdown"` → `_render_segments_md()`: bold → `**...**`, superscript → `^...^`, url → `[text](url)`
-   - `"latex"` → `_render_segments_tex()`: bold → `\textbf{}`, superscript → `$^{}$`
+   - `"markdown"` → `_render_segments_md()`: bold → `**...**`, italic → `*...*`, superscript → `^...^`, underline → `<u>...</u>`, url → `[text](url)`
+   - `"latex"` → `_render_segments_tex()`: bold → `\textbf{}`, italic → `\textit{}`, superscript → `$^{}$`, underline → `\underline{}`
 
 ---
 
 ## Step 4: `writer.py` — Write output files
 
-All three `write_*` functions follow the same structure: write a Bibliography
-heading, then write each citation separated by a blank line.
+All three `write_*` functions receive `sections: list[tuple[str | None, list]]`,
+a list of `(heading, citations)` pairs. `core.py` guarantees:
 
-| Function | Heading |
-|----------|---------|
-| `write_docx` | `doc.add_heading("Bibliography", level=1)` |
-| `write_md` | `# Bibliography` |
-| `write_tex` | `\section*{Bibliography}` |
+- `cite_keys` is a list → `sections = [(None, all_citations)]`
+- `cite_keys` is a dict → `sections = [("2025", [...]), ("2024", [...]), ...]`
 
-The Word format is slightly special: each Segment becomes a `Run` object, and
-`.bold`, `.italic`, `.font.superscript` are set directly on the Run.
-python-docx takes care of producing the actual Word formatting.
+Each function writes the top-level Bibliography heading, then iterates over
+sections — inserting a level-2 heading when `heading is not None` — and writes
+each citation prefixed with a per-section number (`1.`, `2.`, …) that resets
+at the start of every section.
+
+| Function | Level-1 heading | Level-2 heading (grouped) |
+|----------|-----------------|---------------------------|
+| `write_docx` | `Heading 1` | `Heading 2` |
+| `write_md` | `# Bibliography` | `## <heading>` |
+| `write_tex` | `\section*{Bibliography}` | `\subsection*{<heading>}` |
+
+The Word format is slightly special: the number prefix is added as a plain Run
+at the start of each paragraph, followed by one Run per Segment with `.bold`,
+`.italic`, and `.font.superscript` set directly.
 
 ---
 
