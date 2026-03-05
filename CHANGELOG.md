@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.2] - 2026-03-05
+
+### Fixed
+
+- Annotation symbols `*` and `_` inside `<sup>` are now escaped as `&#42;`
+  and `&#95;` respectively, preventing GitHub Markdown from interpreting them
+  as emphasis markers and turning surrounding text italic.
+- Underline formatting in Markdown now uses `<ins>…</ins>` instead of
+  `<u>…</u>`. GitHub's HTML sanitizer strips `<u>` but allows `<ins>`, which
+  browsers render with `text-decoration: underline` by default.
+- Bold and underline are now applied in the correct order (`**<ins>…</ins>**`
+  instead of `<ins>**…**</ins>`), ensuring both format correctly on GitHub.
+
+---
+
 ## [0.2.1] - 2026-03-05
 
 ### Fixed
