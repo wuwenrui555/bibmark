@@ -141,10 +141,11 @@ A full citation is a list of Segments, for example:
    - If the author has an annotation symbol, sets `superscript=True` when applicable
    - Inserts `", and "` before the last author and `", "` between all others
 4. Appends title, journal (bold italic), and the volume/number/pages/year body
-5. DOI is a separate Segment with a `url` field
+5. DOI is split into two Segments: a plain `"doi:"` prefix and the DOI number
+   with a `url` field
 6. Renders according to `output_format`:
    - `"word"` → returns the Segment list as-is (writer.py applies the styling)
-   - `"markdown"` → `_render_segments_md()`: bold → `**...**`, italic → `*...*`, superscript → `^...^`, underline → `<u>...</u>`, url → `[text](url)`
+   - `"markdown"` → `_render_segments_md()`: bold → `**...**`, italic → `*...*`, superscript → `<sup>...</sup>`, underline → `<u>...</u>`, url → `[text](url)`
    - `"latex"` → `_render_segments_tex()`: bold → `\textbf{}`, italic → `\textit{}`, superscript → `$^{}$`, underline → `\underline{}`
 
 ---
