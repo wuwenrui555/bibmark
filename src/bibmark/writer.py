@@ -17,6 +17,7 @@ def write_docx(citations: list, output_path: str):
         Destination file path.
     """
     doc = Document()
+    doc.add_heading("Bibliography", level=1)
     for segments in citations:
         para = doc.add_paragraph()
         for seg in segments:
@@ -40,6 +41,7 @@ def write_md(citations: list[str], output_path: str):
         Destination file path.
     """
     with open(output_path, "w", encoding="utf-8") as f:
+        f.write("# Bibliography\n\n")
         for citation in citations:
             f.write(citation + "\n\n")
 
@@ -56,5 +58,6 @@ def write_tex(citations: list[str], output_path: str):
         Destination file path.
     """
     with open(output_path, "w", encoding="utf-8") as f:
+        f.write("\\section*{Bibliography}\n\n")
         for citation in citations:
             f.write(citation + "\n\n")
