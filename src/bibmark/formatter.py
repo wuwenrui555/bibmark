@@ -158,13 +158,14 @@ def _render_segments_md(segments: list[Segment]) -> str:
     for s in segments:
         text = s["text"]
         if s["superscript"]:
-            text = f"<sup>{text}</sup>"
+            safe = text.replace("*", "&#42;").replace("_", "&#95;")
+            text = f"<sup>{safe}</sup>"
         if s["italic"]:
             text = f"*{text}*"
-        if s["bold"]:
-            text = f"**{text}**"
         if s["underline"]:
             text = f"<u>{text}</u>"
+        if s["bold"]:
+            text = f"**{text}**"
         if s["url"]:
             text = f"[{text}]({s['url']})"
         parts.append(text)
