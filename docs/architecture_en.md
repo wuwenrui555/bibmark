@@ -90,20 +90,12 @@ A full citation is a list of Segments, for example:
    - `"markdown"` → `_render_segments_md()`: bold → `**...**`, superscript → `^...^`
    - `"latex"` → `_render_segments_tex()`: bold → `\textbf{}`, superscript → `$^{}$`
 
-### `collect_used_keys()`
-
-Iterates over all entries and collects which bibmark keys were actually used. If
-no paper uses `corresponding`, it is omitted from the legend.
-
 ---
 
 ## Step 3: `writer.py` — Write output files
 
-All three `write_*` functions follow the same structure:
-
-1. Call `_build_legend_str()` to build the legend line (only from keys that were used)
-2. Write each citation to the file, separated by a blank line
-3. Append the legend at the end
+All three `write_*` functions follow the same structure: write each citation to
+the file, separated by a blank line.
 
 The Word format is slightly special: each Segment becomes a `Run` object, and
 `.bold`, `.italic`, `.font.superscript` are set directly on the Run.

@@ -88,20 +88,11 @@ entry.fields_dict["bibmark"].value # → "first: {1, 2}, corresponding: {3}"
    - `"markdown"` → `_render_segments_md()`，把 bold 变 `**...**`，superscript 变 `^...^`
    - `"latex"` → `_render_segments_tex()`，把 bold 变 `\textbf{}`，superscript 变 `$^{}$`
 
-### `collect_used_keys()`
-
-遍历所有 entries，收集实际用到了哪些 bibmark key。比如所有论文里都没人用
-`corresponding`，legend 就不显示它。
-
 ---
 
 ## 第三步：`writer.py` — 写出文件
 
-三个 `write_*` 函数结构完全一样：
-
-1. 调用 `_build_legend_str()` 生成图例文字（只包含用到的 key）
-2. 把所有引用写进文件，每条之间空一行
-3. 最后写图例
+三个 `write_*` 函数结构完全一样：把所有引用写进文件，每条之间空一行。
 
 Word 格式稍微特殊：逐个 Segment 创建 `Run` 对象，直接在 Run 上设置
 `.bold`、`.italic`、`.font.superscript`，python-docx 负责生成真正的 Word 格式。
