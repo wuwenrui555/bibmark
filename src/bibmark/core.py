@@ -1,4 +1,6 @@
-"""Pipeline: parse → format → write."""
+"""
+Pipeline: parse → format → write.
+"""
 
 import os
 
@@ -16,17 +18,26 @@ def generate_citations(
     output_dir: str = ".",
     formats: list[str] = ("docx", "md", "tex"),
 ):
-    """Generate citation output files from a list of .bib files.
+    """
+    Generate citation output files from an ordered list of .bib files.
 
     Parameters
     ----------
-    bib_files     : ordered list of .bib file paths
-    my_name       : your full name as it appears in bib author fields
-    annotation_map: maps bibmark keys to symbols, e.g. {"first": "#"}
-    legend_labels : maps bibmark keys to legend text, e.g. {"first": "Co-first author"}
-    superscript   : render annotation symbols as superscript
-    output_dir    : directory to write output files
-    formats       : which formats to generate ("docx", "md", "tex")
+    bib_files : list[str]
+        Ordered list of .bib file paths. Citations are output in this order.
+    my_name : str
+        Your full name as it appears in bib author fields. Rendered in bold.
+    annotation_map : dict
+        Maps bibmark keys to annotation symbols, e.g. ``{"first": "#"}``.
+    legend_labels : dict
+        Maps bibmark keys to legend text, e.g. ``{"first": "Co-first author"}``.
+    superscript : bool, optional
+        Whether to render annotation symbols as superscript. Default is ``True``.
+    output_dir : str, optional
+        Directory to write output files. Created if it does not exist. Default is ``"."``.
+    formats : list[str], optional
+        Which formats to generate. Any subset of ``["docx", "md", "tex"]``.
+        Default is all three.
     """
     os.makedirs(output_dir, exist_ok=True)
 

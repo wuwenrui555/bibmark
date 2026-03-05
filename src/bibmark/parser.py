@@ -9,7 +9,24 @@ import bibtexparser
 
 
 def parse_bib_file(path: str):
-    """Parse a single .bib file and return the first entry."""
+    """
+    Parse a single .bib file and return the first entry.
+
+    Parameters
+    ----------
+    path : str
+        Path to the .bib file.
+
+    Returns
+    -------
+    bibtexparser.model.Entry
+        The first entry found in the file.
+
+    Raises
+    ------
+    ValueError
+        If no entries are found in the file.
+    """
     library = bibtexparser.parse_file(path)
     if library.failed_blocks:
         print(f"WARNING: failed to parse some blocks in {path}", file=sys.stderr)
@@ -19,10 +36,23 @@ def parse_bib_file(path: str):
 
 
 def parse_bibmark_field(value: str, cite_key: str, annotation_map: dict) -> dict:
-    """Parse bibmark field string into structured dict.
+    """
+    Parse a bibmark field string into a structured dict.
 
-    Input:  "first: {1, 2}, corresponding: {3, 4}"
-    Output: {"first": [1, 2], "corresponding": [3, 4]}
+    Parameters
+    ----------
+    value : str
+        Raw bibmark field value, e.g. ``"first: {1, 2}, corresponding: {3, 4}"``.
+    cite_key : str
+        The cite key of the entry, used in warning messages.
+    annotation_map : dict
+        Maps known bibmark keys to symbols. Unknown keys trigger a warning.
+
+    Returns
+    -------
+    dict
+        Mapping of role name to list of 1-based author indices,
+        e.g. ``{"first": [1, 2], "corresponding": [3, 4]}``.
     """
     result = {}
     pattern = r"(\w+)\s*:\s*\{([^}]*)\}"

@@ -8,6 +8,24 @@ from docx import Document
 def _build_legend_str(
     used_keys: list[str], annotation_map: dict, legend_labels: dict
 ) -> str:
+    """
+    Build the legend line from the set of used bibmark keys.
+
+    Parameters
+    ----------
+    used_keys : list[str]
+        Ordered list of bibmark keys that appear in the citations.
+    annotation_map : dict
+        Maps bibmark keys to annotation symbols.
+    legend_labels : dict
+        Maps bibmark keys to human-readable label text.
+
+    Returns
+    -------
+    str
+        Legend string, e.g. ``"# Co-first author   * Corresponding author"``.
+        Empty string if no keys are used.
+    """
     parts = []
     for key in used_keys:
         symbol = annotation_map.get(key, "")
@@ -17,7 +35,21 @@ def _build_legend_str(
 
 
 def _make_superscript_run(paragraph, text: str):
-    """Add a superscript run to a python-docx paragraph."""
+    """
+    Add a superscript run to a python-docx paragraph.
+
+    Parameters
+    ----------
+    paragraph : docx.text.paragraph.Paragraph
+        The paragraph to append the run to.
+    text : str
+        The text content of the superscript run.
+
+    Returns
+    -------
+    docx.text.run.Run
+        The newly added run.
+    """
     run = paragraph.add_run(text)
     run.font.superscript = True
     return run
@@ -30,6 +62,22 @@ def write_docx(
     legend_labels: dict,
     output_path: str,
 ):
+    """
+    Write citations and legend to a .docx file.
+
+    Parameters
+    ----------
+    citations : list[list[Segment]]
+        One list of segments per citation.
+    used_keys : list[str]
+        Ordered bibmark keys used across all citations, for the legend.
+    annotation_map : dict
+        Maps bibmark keys to annotation symbols.
+    legend_labels : dict
+        Maps bibmark keys to human-readable label text.
+    output_path : str
+        Destination file path.
+    """
     doc = Document()
     for segments in citations:
         para = doc.add_paragraph()
@@ -40,7 +88,6 @@ def write_docx(
             if seg["superscript"]:
                 run.font.superscript = True
 
-    # Legend paragraph
     legend_str = _build_legend_str(used_keys, annotation_map, legend_labels)
     if legend_str:
         doc.add_paragraph(legend_str)
@@ -55,6 +102,22 @@ def write_md(
     legend_labels: dict,
     output_path: str,
 ):
+    """
+    Write citations and legend to a Markdown file.
+
+    Parameters
+    ----------
+    citations : list[str]
+        One Markdown-formatted string per citation.
+    used_keys : list[str]
+        Ordered bibmark keys used across all citations, for the legend.
+    annotation_map : dict
+        Maps bibmark keys to annotation symbols.
+    legend_labels : dict
+        Maps bibmark keys to human-readable label text.
+    output_path : str
+        Destination file path.
+    """
     legend_str = _build_legend_str(used_keys, annotation_map, legend_labels)
     with open(output_path, "w", encoding="utf-8") as f:
         for citation in citations:
@@ -70,6 +133,22 @@ def write_tex(
     legend_labels: dict,
     output_path: str,
 ):
+    """
+    Write citations and legend to a LaTeX file.
+
+    Parameters
+    ----------
+    citations : list[str]
+        One LaTeX-formatted string per citation.
+    used_keys : list[str]
+        Ordered bibmark keys used across all citations, for the legend.
+    annotation_map : dict
+        Maps bibmark keys to annotation symbols.
+    legend_labels : dict
+        Maps bibmark keys to human-readable label text.
+    output_path : str
+        Destination file path.
+    """
     legend_str = _build_legend_str(used_keys, annotation_map, legend_labels)
     with open(output_path, "w", encoding="utf-8") as f:
         for citation in citations:

@@ -10,11 +10,36 @@ from .parser import parse_bibmark_field
 
 
 def _split_authors(author_str: str) -> list[str]:
+    """
+    Split a bib author string on `` and `` into individual name strings.
+
+    Parameters
+    ----------
+    author_str : str
+        Raw author field value, e.g. ``"Wu, Wenrui and Zhang, San"``.
+
+    Returns
+    -------
+    list[str]
+        Individual author name strings.
+    """
     return [a.strip() for a in re.split(r"\s+and\s+", author_str, flags=re.IGNORECASE)]
 
 
 def _normalize_author(author: str) -> str:
-    """Convert 'Last, First Middle' → 'First Middle Last'."""
+    """
+    Convert ``"Last, First Middle"`` to ``"First Middle Last"``.
+
+    Parameters
+    ----------
+    author : str
+        Author name in either ``"Last, First"`` or ``"First Last"`` format.
+
+    Returns
+    -------
+    str
+        Author name in ``"First Last"`` format.
+    """
     if "," in author:
         parts = author.split(",", 1)
         last = parts[0].strip()
@@ -24,7 +49,23 @@ def _normalize_author(author: str) -> str:
 
 
 def _get_field(entry, key: str, cite_key: str) -> str:
-    """Get field value, emit warning and return '???' if missing."""
+    """
+    Retrieve a field value from an entry, warning and returning ``"???"`` if missing.
+
+    Parameters
+    ----------
+    entry : bibtexparser.model.Entry
+        Parsed bib entry.
+    key : str
+        Field name to retrieve.
+    cite_key : str
+        The entry's cite key, used in warning messages.
+
+    Returns
+    -------
+    str
+        Field value as a string, or ``"???"`` if the field is absent.
+    """
     val = entry.fields_dict.get(key)
     if val is None:
         print(f"WARNING: missing {key} in {cite_key}", file=sys.stderr)
@@ -33,6 +74,19 @@ def _get_field(entry, key: str, cite_key: str) -> str:
 
 
 def _format_pages(pages: str) -> str:
+    """
+    Replace ``--`` with an en-dash in a pages string.
+
+    Parameters
+    ----------
+    pages : str
+        Raw pages field value, e.g. ``"123--145"``.
+
+    Returns
+    -------
+    str
+        Pages string with en-dash, e.g. ``"123–145"``.
+    """
     return pages.replace("--", "\u2013")
 
 
@@ -44,10 +98,42 @@ Segment = dict  # {"text": str, "bold": bool, "italic": bool, "superscript": boo
 
 
 def _seg(text: str, bold=False, italic=False, superscript=False) -> Segment:
+    """
+    Create a text segment with formatting flags.
+
+    Parameters
+    ----------
+    text : str
+        The text content of the segment.
+    bold : bool, optional
+        Whether the text is bold.
+    italic : bool, optional
+        Whether the text is italic.
+    superscript : bool, optional
+        Whether the text is superscript.
+
+    Returns
+    -------
+    Segment
+        Dict with keys ``text``, ``bold``, ``italic``, ``superscript``.
+    """
     return {"text": text, "bold": bold, "italic": italic, "superscript": superscript}
 
 
 def _render_segments_md(segments: list[Segment]) -> str:
+    """
+    Render a list of segments to a Markdown string.
+
+    Parameters
+    ----------
+    segments : list[Segment]
+        Formatted text segments.
+
+    Returns
+    -------
+    str
+        Markdown-formatted citation string.
+    """
     parts = []
     for s in segments:
         text = s["text"]
@@ -62,6 +148,19 @@ def _render_segments_md(segments: list[Segment]) -> str:
 
 
 def _render_segments_tex(segments: list[Segment]) -> str:
+    """
+    Render a list of segments to a LaTeX string.
+
+    Parameters
+    ----------
+    segments : list[Segment]
+        Formatted text segments.
+
+    Returns
+    -------
+    str
+        LaTeX-formatted citation string.
+    """
     parts = []
     for s in segments:
         text = s["text"]
@@ -88,17 +187,31 @@ def format_citation(
     output_format: str,
 ) -> Union[str, list[Segment]]:
     """
+    Format a parsed bib entry into a citation.
+
     Parameters
     ----------
-    entry         : bibtexparser v2 entry object
-    my_name       : full name of document owner, rendered in bold
-    annotation_map: dict mapping bibmark keys to symbols
-    superscript   : whether to render annotations as superscript
-    output_format : "markdown" | "latex" | "word"
+    entry : bibtexparser.model.Entry
+        Parsed bib entry.
+    my_name : str
+        Full name of the document owner, rendered in bold.
+    annotation_map : dict
+        Maps bibmark keys to annotation symbols, e.g. ``{"first": "#"}``.
+    superscript : bool
+        Whether to render annotation symbols as superscript.
+    output_format : str
+        One of ``"markdown"``, ``"latex"``, or ``"word"``.
 
     Returns
     -------
-    str for "markdown" and "latex", list[Segment] for "word"
+    str or list[Segment]
+        Formatted citation string for ``"markdown"`` and ``"latex"``;
+        list of segments for ``"word"``.
+
+    Raises
+    ------
+    ValueError
+        If ``output_format`` is not a recognised value.
     """
     cite_key = entry.key
     fields = entry.fields_dict
@@ -181,7 +294,21 @@ def collect_used_keys(
     entries,
     annotation_map: dict,
 ) -> list[str]:
-    """Return ordered list of bibmark keys actually used across all entries."""
+    """
+    Collect bibmark keys that are actually used across all entries.
+
+    Parameters
+    ----------
+    entries : list[bibtexparser.model.Entry]
+        Parsed bib entries.
+    annotation_map : dict
+        Maps bibmark keys to symbols. Only keys present here are collected.
+
+    Returns
+    -------
+    list[str]
+        Ordered list of used bibmark keys, in first-appearance order.
+    """
     seen: list[str] = []
     for entry in entries:
         fields = entry.fields_dict
