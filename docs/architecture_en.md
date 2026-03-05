@@ -5,7 +5,7 @@
 When you call `generate_citations()`, the code runs three steps in sequence:
 
 ```plain
-.bib files
+publications.bib
     ↓  parser.py    — read and parse
     ↓  formatter.py — format data into citation text
     ↓  writer.py    — write text to output files
@@ -18,12 +18,21 @@ This pipeline is wired together in `core.py`. `__init__.py` simply re-exports
 
 ---
 
-## Step 1: `parser.py` — Read .bib files
+## Step 1: `parser.py` — Read the .bib file
 
-### `parse_bib_file(path)`
+### `parse_bib(path, keys)`
 
-Uses bibtexparser v2 to read a `.bib` file and returns the first entry object.
-The entry has a `fields_dict` mapping field names to their values, for example:
+Uses bibtexparser v2 to read the entire `.bib` file, then returns entries in the
+order specified by `keys`. This means output order is controlled by the
+`cite_keys` list in your calling script, not by the order of entries in the
+`.bib` file.
+
+```python
+entries_by_key = {e.key: e for e in library.entries}
+# retrieve in keys order; warn and skip any key not found
+```
+
+Each entry has a `fields_dict` mapping field names to their values, for example:
 
 ```python
 entry.fields_dict["author"].value  # → "Wenrui Wu and San Zhang"
@@ -124,7 +133,7 @@ Intermediate Representation (IR) pattern.
 src/bibmark/
 ├── __init__.py   exposes only generate_citations to the outside
 ├── core.py       wires parser → formatter → writer into a pipeline
-├── parser.py     reads .bib files and parses bibmark fields
+├── parser.py     reads .bib file, returns entries in cite_keys order
 ├── formatter.py  builds Segment lists and renders to md/tex/word
 └── writer.py     writes formatted output to .docx/.md/.tex files
 ```

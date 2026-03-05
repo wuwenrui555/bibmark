@@ -1,6 +1,7 @@
 # bibmark
 
-Generate formatted citation lists (Word, Markdown, LaTeX) from ordered `.bib` files, with support for custom author-role annotations (co-first, corresponding, etc.).
+Generate formatted citation lists (Word, Markdown, LaTeX) from a `.bib` file,
+with support for custom author-role annotations (co-first, corresponding, etc.).
 
 ## Setup
 
@@ -20,15 +21,15 @@ Write a script that imports `generate_citations`:
 from bibmark import generate_citations
 
 generate_citations(
-    bib_files=["paper1.bib", "paper2.bib"],
+    bib_file="publications.bib",
+    cite_keys=[
+        "huang2022kidney",
+        "wu2023tls",
+    ],
     my_name="Wenrui Wu",
     annotation_map={
         "first":         "#",
         "corresponding": "*",
-    },
-    legend_labels={
-        "first":         "Co-first author",
-        "corresponding": "Corresponding author",
     },
     superscript=True,
     output_dir="output",
@@ -45,7 +46,8 @@ This generates `output/citations.docx`, `output/citations.md`, and `output/citat
 
 ## .bib File Format
 
-Each `.bib` file should contain **one entry**. Use the custom `bibmark` field to encode author roles as 1-based author indices:
+Put all entries in a single `.bib` file. Use the custom `bibmark` field to encode
+author roles as 1-based author indices:
 
 ```bibtex
 @article{huang2022kidney,
@@ -61,24 +63,25 @@ Each `.bib` file should contain **one entry**. Use the custom `bibmark` field to
 }
 ```
 
+The order of entries in the output is determined by `cite_keys`, not by the order
+in the `.bib` file.
+
 ## Output Example
 
 ```plain
 Mingchuan Huang^#^, **Wenrui Wu**^#^, Qiang Zhang^#^, Jun Li, Xiaojun Su^*^,
 Longshan Liu^*^, and Changxi Wang^*^. Single kidney transplantation ...
 *Translational Pediatrics*, 11(11):1872885–1871885, 2022, doi:10.21037/tp-22-547
-
-# Co-first author   * Corresponding author
 ```
 
 ## `generate_citations` Parameters
 
 | Parameter | Type | Default | Description |
 | --------- | ---- | ------- | ----------- |
-| `bib_files` | `list[str]` | — | Ordered list of `.bib` file paths |
+| `bib_file` | `str` | — | Path to the `.bib` file |
+| `cite_keys` | `list[str]` | — | Cite keys in the desired output order |
 | `my_name` | `str` | — | Your name as it appears in bib author fields |
 | `annotation_map` | `dict` | — | Maps bibmark keys to symbols |
-| `legend_labels` | `dict` | — | Maps bibmark keys to legend text |
 | `superscript` | `bool` | `True` | Render symbols as superscript |
 | `output_dir` | `str` | `"."` | Output directory |
 | `formats` | `list[str]` | `("docx","md","tex")` | Which formats to generate |

@@ -5,7 +5,7 @@
 你调用 `generate_citations()` 之后，代码做了三件事，按顺序串联：
 
 ```plain
-.bib 文件
+publications.bib
     ↓  parser.py    — 读取和解析
     ↓  formatter.py — 把数据格式化成引用文本
     ↓  writer.py    — 把文本写进文件
@@ -19,10 +19,17 @@ citations.docx / .md / .tex
 
 ## 第一步：`parser.py` — 读取 .bib 文件
 
-### `parse_bib_file(path)`
+### `parse_bib(path, keys)`
 
-用 bibtexparser v2 读一个 `.bib` 文件，返回第一个 entry 对象。Entry 对象有一个
-`fields_dict`，是字段名到值的字典，比如：
+用 bibtexparser v2 读整个 `.bib` 文件，然后按 `keys` 列表的顺序返回对应的 entry。
+这样输出顺序由调用脚本里的 `cite_keys` 控制，而不是 `.bib` 文件里的顺序。
+
+```python
+entries_by_key = {e.key: e for e in library.entries}
+# 按 keys 顺序取出，找不到的 key 打印 warning 并跳过
+```
+
+每个 entry 有一个 `fields_dict`，是字段名到值的字典，比如：
 
 ```python
 entry.fields_dict["author"].value  # → "Wenrui Wu and San Zhang"
@@ -117,7 +124,7 @@ Word 格式稍微特殊：逐个 Segment 创建 `Run` 对象，直接在 Run 上
 src/bibmark/
 ├── __init__.py   对外只暴露 generate_citations
 ├── core.py       串联 parser → formatter → writer 的 pipeline
-├── parser.py     读 .bib 文件，解析 bibmark 字段
+├── parser.py     读 .bib 文件，按 cite_keys 顺序返回 entries
 ├── formatter.py  构建 Segment 列表，渲染成 md/tex/word 格式
 └── writer.py     把格式化结果写进 .docx/.md/.tex 文件
 ```
