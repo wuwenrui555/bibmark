@@ -71,9 +71,15 @@ def write_tex(sections: list[tuple[str | None, list[str]]], output_path: str):
         Destination file path.
     """
     with open(output_path, "w", encoding="utf-8") as f:
+        f.write("\\documentclass{article}\n")
+        f.write("\\usepackage[T1]{fontenc}\n")
+        f.write("\\usepackage[utf8]{inputenc}\n")
+        f.write("\\usepackage{hyperref}\n")
+        f.write("\\begin{document}\n\n")
         f.write("\\section*{Bibliography}\n\n")
         for heading, citations in sections:
             if heading is not None:
                 f.write(f"\\subsection*{{{heading}}}\n\n")
             for i, citation in enumerate(citations, start=1):
                 f.write(f"{i}. {citation}\n\n")
+        f.write("\\end{document}\n")

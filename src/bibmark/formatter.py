@@ -181,9 +181,10 @@ def _render_segments_tex(segments: list[Segment]) -> str:
     str
         LaTeX-formatted citation string.
     """
+    _escape = str.maketrans({"#": r"\#", "%": r"\%", "&": r"\&", "_": r"\_"})
     parts = []
     for s in segments:
-        text = s["text"]
+        text = s["text"].translate(_escape)
         if s["superscript"]:
             text = f"$^{{{text}}}$"
         if s["italic"]:
