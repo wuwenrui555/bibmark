@@ -152,19 +152,21 @@ def _render_segments_md(segments: list[Segment]) -> str:
     Returns
     -------
     str
-        Markdown-formatted citation string.
+        Markdown-formatted citation string. Uses ``<ins>`` for underline
+        (GitHub strips ``<u>`` but allows ``<ins>``).
     """
     parts = []
     for s in segments:
         text = s["text"]
         if s["superscript"]:
-            text = f"<sup>{text}</sup>"
+            safe = text.replace("*", "&#42;").replace("_", "&#95;")
+            text = f"<sup>{safe}</sup>"
         if s["italic"]:
             text = f"*{text}*"
+        if s["underline"]:
+            text = f"<ins>{text}</ins>"
         if s["bold"]:
             text = f"**{text}**"
-        if s["underline"]:
-            text = f"<u>{text}</u>"
         if s["url"]:
             text = f"[{text}]({s['url']})"
         parts.append(text)

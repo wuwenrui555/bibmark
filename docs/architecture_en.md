@@ -145,7 +145,7 @@ A full citation is a list of Segments, for example:
    with a `url` field
 6. Renders according to `output_format`:
    - `"word"` → returns the Segment list as-is (writer.py applies the styling)
-   - `"markdown"` → `_render_segments_md()`: bold → `**...**`, italic → `*...*`, superscript → `<sup>...</sup>`, underline → `<u>...</u>`, url → `[text](url)`
+   - `"markdown"` → `_render_segments_md()`: bold → `**...**`, italic → `*...*`, superscript → `<sup>...</sup>` (`*`/`_` escaped as HTML entities to avoid emphasis interpretation), underline → `<ins>...</ins>` (GitHub sanitizer strips `<u>`; `<ins>` is allowed and renders with underline), url → `[text](url)`
    - `"latex"` → `_render_segments_tex()`: bold → `\textbf{}`, italic → `\textit{}`, superscript → `$^{}$`, underline → `\underline{}`
 
 ---
