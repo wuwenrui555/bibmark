@@ -70,7 +70,26 @@ def _get_field(entry, key: str, cite_key: str) -> str:
     if val is None:
         print(f"WARNING: missing {key} in {cite_key}", file=sys.stderr)
         return "???"
-    return str(val.value)
+    return _strip_braces(str(val.value))
+
+
+def _strip_braces(value: str) -> str:
+    """
+    Remove LaTeX protective braces from a field value.
+
+    Parameters
+    ----------
+    value : str
+        Raw field value possibly containing brace-protected text,
+        e.g. ``"Transplantation from {{China}}"``.
+
+    Returns
+    -------
+    str
+        Value with all curly braces removed,
+        e.g. ``"Transplantation from China"``.
+    """
+    return re.sub(r"\{+([^{}]*)\}+", r"\1", value)
 
 
 def _format_pages(pages: str) -> str:
