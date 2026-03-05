@@ -44,6 +44,25 @@ uv run python your_script.py
 
 This generates `output/citations.docx`, `output/citations.md`, and `output/citations.tex`.
 
+### Grouped output
+
+Pass a `dict` instead of a `list` to group citations under section headings.
+Each key becomes a level-2 heading; numbering restarts from 1 within each section.
+
+```python
+generate_citations(
+    bib_file="publications.bib",
+    cite_keys={
+        "2025": ["huang2025effect"],
+        "2024": ["zhang2024ccl19producing", "feng2024timerestricted"],
+        "2022": ["wu2022epletpredicted", "huang2022single"],
+    },
+    my_name="Wenrui Wu",
+    annotation_map={"first": "#", "corresponding": "*"},
+    output_dir="output",
+)
+```
+
 ## .bib File Format
 
 Put all entries in a single `.bib` file. Use the custom `bibmark` field to encode
@@ -86,9 +105,11 @@ field values. Truncated author lists ending with `and others` trigger a warning.
 ```plain
 # Bibliography
 
-Mingchuan Huang^#^, **Wenrui Wu**^#^, Qiang Zhang^#^, Jun Li, Xiaojun Su^*^,
+## 2022
+
+1. Mingchuan Huang^#^, **Wenrui Wu**^#^, Qiang Zhang^#^, Jun Li, Xiaojun Su^*^,
 Longshan Liu^*^, and Changxi Wang^*^. Single kidney transplantation ...
-***Translational Pediatrics***, 11(11):1872885–1871885, 2022,
+*Translational Pediatrics*, 11(11):1872885–1871885, 2022,
 [doi:10.21037/tp-22-547](https://doi.org/10.21037/tp-22-547)
 ```
 
@@ -99,7 +120,7 @@ Longshan Liu^*^, and Changxi Wang^*^. Single kidney transplantation ...
 | Parameter | Type | Default | Description |
 | --------- | ---- | ------- | ----------- |
 | `bib_file` | `str` | — | Path to the `.bib` file |
-| `cite_keys` | `list[str]` | — | Cite keys in the desired output order |
+| `cite_keys` | `list[str]` or `dict[str, list[str]]` | — | Flat list for a simple bibliography; dict for grouped output with section headings |
 | `my_name` | `str` | — | Your name as it appears in bib author fields |
 | `annotation_map` | `dict` | — | Maps bibmark keys to symbols |
 | `superscript` | `bool` | `True` | Render symbols as superscript |
