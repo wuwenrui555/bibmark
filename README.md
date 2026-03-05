@@ -140,7 +140,7 @@ field values. Truncated author lists ending with `and others` trigger a warning.
 
 ## 2022
 
-1. <u>**Wenrui Wu**</u><sup>#</sup>, Huanxi Zhang<sup>#</sup>, Jinghong Tan, Qian Fu,
+1. **<ins>Wenrui Wu</ins>**<sup>#</sup>, Huanxi Zhang<sup>#</sup>, Jinghong Tan, Qian Fu,
 Jun Li, Chenglin Wu, Huiting Huang, Bowen Xu, Liuting Ling, Longshan Liu<sup>*</sup>,
 Xiaojun Su<sup>*</sup>, and Changxi Wang. Eplet-Predicted Antigens: An Attempt to
 Introduce Eplets into Unacceptable Antigen Determination and Calculated Panel-Reactive
