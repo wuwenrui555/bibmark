@@ -1,0 +1,17 @@
+[project]
+name = "bibmark"
+version = "0.1.0"
+description = "Generate formatted citation lists from ordered .bib files"
+readme = "README.md"
+authors = [
+    { name = "wuwenrui555", email = "wuwenruiwwr@outlook.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "bibtexparser>=2.0.0b7",
+    "python-docx>=1.2.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
