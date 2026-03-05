@@ -10,8 +10,6 @@
 
 2. Huanxi Zhang<sup>#</sup>, <u>**Wenrui Wu**</u><sup>#</sup>, Yitao Zheng<sup>#</sup>, Qian Fu, Peisong Chen, Jianyi Li, Zixuan Wu, Jincui Gu, Jun Li, Longshan Liu, Chenglin Wu, Sizhe Long, Bowen Xu, Liuting Ling, Yingxin Fu<sup>*</sup>, and Changxi Wang<sup>*</sup>. The Effectiveness of Nirmatrelvir/Ritonavir Regimen in Hospitalized Renal Transplant Patients with Prolonged COVID-19 Infection: A Multicenter Clinical Experience. ***Renal Failure***, 46(2):2385724, 2024, doi:[10.1080/0886022X.2024.2385724](https://doi.org/10.1080/0886022X.2024.2385724)
 
-3. Ruijia Feng<sup>#</sup>, Wenchao Yang<sup>#</sup>, Weiqi Feng<sup>#</sup>, Xiuyi Huang<sup>#</sup>, Meifeng Cen, Guiyan Peng, <u>**Wenrui Wu**</u>, Zhecun Wang, Yexiang Jing, Ting Long, Yunchong Liu, Zilun Li<sup>*</sup>, Guangqi Chang<sup>*</sup>, and Kan Huang<sup>*</sup>. Time-Restricted Feeding Ameliorates Non-Alcoholic Fatty Liver Disease through Modulating Hepatic Nicotinamide Metabolism via Gut Microbiota Remodeling. ***Gut Microbes***, 16(1):2390164, 2024, doi:[10.1080/19490976.2024.2390164](https://doi.org/10.1080/19490976.2024.2390164)
-
 ## 2023
 
 1. Qiang Zhang<sup>#</sup>, Xiaojun Su<sup>#</sup>, Longshan Liu<sup>#</sup>, Mingchuan Huang, <u>**Wenrui Wu**</u>, Huanxi Zhang, Chenglin Wu, Qian Fu, Pengfei Gao, Liuting Ling, Wenting Chen, Bowen Xu, Yuan Liao, Jun Li<sup>*</sup>, and Changxi Wang. The Outcome of Transplanting Kidneys from Very Small Pediatric Deceased Donors. ***Transplantation***, 107(7):1564, 2023, doi:[10.1097/TP.0000000000004534](https://doi.org/10.1097/TP.0000000000004534)

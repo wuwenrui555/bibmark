@@ -13,7 +13,6 @@ generate_citations(
         "2024": [
             "zhang2024ccl19producing",
             "zhang2024effectiveness",
-            "feng2024timerestricted",
         ],
         "2023": [
             "zhang2023outcome",
