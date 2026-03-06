@@ -5,6 +5,8 @@ with support for custom author-role annotations (co-first, corresponding, etc.).
 
 **[→ View Wenrui's Bibliography](examples/wenrui_wu/output/citations.md)**
 
+**[→ View Boyan's Bibliography](examples/boyan_wang/output/citations.md)**
+
 ## Table of Contents
 
 - [Introduction](#introduction)
