@@ -3,7 +3,7 @@
 Generate formatted citation lists (Word, Markdown, LaTeX) from a `.bib` file,
 with support for custom author-role annotations (co-first, corresponding, etc.).
 
-**[→ View Wenrui's Bibliography](examples/output/citations.md)**
+**[→ View Wenrui's Bibliography](examples/wenrui_wu/output/citations.md)**
 
 ## Table of Contents
 
