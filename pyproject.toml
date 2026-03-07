@@ -1,6 +1,6 @@
 [project]
 name = "bibmark"
-version = "0.2.2"
+version = "1.0.0"
 description = "Generate formatted citation lists from ordered .bib files"
 readme = "README.md"
 authors = [

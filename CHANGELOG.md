@@ -1,5 +1,46 @@
 # Changelog
 
+## [1.0.0] - 2026-03-06
+
+First stable release. Covers all features developed across the 0.x series,
+plus new additions in this release.
+
+### Added
+
+- `continuous_numbering` parameter in `generate_citations()`: when `True`,
+  citation numbers continue across sections; when `False` (default), numbering
+  resets to 1 at the start of each section.
+- Examples reorganized by person (`examples/<name>/`), each with its own
+  `publications.bib`, `run.py`, and `output/`. A top-level
+  `examples/run_all_examples.py` runs all examples via `uv run`.
+
+### Changed
+
+- Missing required fields now use `Unknown` as a placeholder instead of `???`.
+- When `volume` is missing, the volume/number part renders as `Unknown(Unknown)`
+  to make both gaps explicit, regardless of whether `number` is present.
+- `number` is now always validated and reported in warnings; it is silently
+  omitted from output only when `volume` is present.
+- All missing-field warnings for the same entry are consolidated into a single
+  line: `WARNING: missing [field1, field2] in <cite_key>`.
+
+### Core features (carried over from 0.x)
+
+- `generate_citations()` public API: reads a `.bib` file and produces formatted
+  citation lists in Word (`.docx`), Markdown, and LaTeX (`.tex`).
+- Grouped bibliography: `cite_keys` accepts `dict[str, list[str]]` to produce
+  a sectioned output with a level-2 heading per group.
+- Custom `bibmark` field for author-role annotations (e.g. co-first `#`,
+  corresponding `*`). Supports 1-based positive and negative indices.
+- Segment-based intermediate representation: citation data is built once and
+  rendered per output format, avoiding logic duplication.
+- `my_name` rendered in bold and underline across all output formats.
+- Journal name rendered in bold italic across all output formats.
+- DOI rendered as a clickable hyperlink in Markdown output.
+- LaTeX output includes a complete document wrapper and escapes special chars.
+
+---
+
 ## [0.2.2] - 2026-03-05
 
 ### Fixed

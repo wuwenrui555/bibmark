@@ -17,6 +17,7 @@ def generate_citations(
     superscript: bool = True,
     output_dir: str = ".",
     formats: list[str] = ("docx", "md", "tex"),
+    continuous_numbering: bool = False,
 ):
     """
     Generate citation output files from a .bib file.
@@ -41,6 +42,10 @@ def generate_citations(
     formats : list[str], optional
         Which formats to generate. Any subset of ``["docx", "md", "tex"]``.
         Default is all three.
+    continuous_numbering : bool, optional
+        If ``True``, citation numbers continue across sections. If ``False``
+        (default), numbering resets to 1 at the start of each section.
+        Has no effect when ``cite_keys`` is a flat list.
     """
     os.makedirs(output_dir, exist_ok=True)
 
@@ -64,16 +69,19 @@ def generate_citations(
         write_docx(
             [(h, [format_citation(e, my_name, annotation_map, superscript, "word") for e in entries]) for h, entries in sections],
             os.path.join(output_dir, "citations.docx"),
+            continuous_numbering=continuous_numbering,
         )
 
     if "md" in formats:
         write_md(
             [(h, [format_citation(e, my_name, annotation_map, superscript, "markdown") for e in entries]) for h, entries in sections],
             os.path.join(output_dir, "citations.md"),
+            continuous_numbering=continuous_numbering,
         )
 
     if "tex" in formats:
         write_tex(
             [(h, [format_citation(e, my_name, annotation_map, superscript, "latex") for e in entries]) for h, entries in sections],
             os.path.join(output_dir, "citations.tex"),
+            continuous_numbering=continuous_numbering,
         )

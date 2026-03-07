@@ -50,7 +50,7 @@ def _normalize_author(author: str) -> str:
 
 def _get_field(entry, key: str, cite_key: str) -> str:
     """
-    Retrieve a field value from an entry, warning and returning ``"???"`` if missing.
+    Retrieve a field value from an entry, returning ``"Unknown"`` if missing.
 
     Parameters
     ----------
@@ -64,11 +64,11 @@ def _get_field(entry, key: str, cite_key: str) -> str:
     Returns
     -------
     str
-        Field value as a string, or ``"???"`` if the field is absent.
+        Field value as a string, or ``"Unknown"`` if the field is absent.
     """
     val = entry.fields_dict.get(key)
     if val is None:
-        return "???"
+        return "Unknown"
     return _strip_braces(str(val.value))
 
 
@@ -298,15 +298,20 @@ def format_citation(
     segments.append(_seg(journal, bold=True, italic=True))
 
     # --- Volume(Number):Pages, Year, doi:DOI ---
-    volume = _get_field(entry, "volume", cite_key)
+    volume_val = entry.fields_dict.get("volume")
     number_val = entry.fields_dict.get("number")
-    number_str = f"({number_val.value})" if number_val is not None else ""
+    if volume_val is None:
+        vol_num_str = "Unknown(Unknown)"
+    else:
+        volume = _strip_braces(str(volume_val.value))
+        number_str = f"({number_val.value})" if number_val is not None else ""
+        vol_num_str = f"{volume}{number_str}"
     pages_raw = _get_field(entry, "pages", cite_key)
     pages = _format_pages(pages_raw)
     year = _get_field(entry, "year", cite_key)
     doi = _get_field(entry, "doi", cite_key)
 
-    segments.append(_seg(f", {volume}{number_str}:{pages}, {year}, "))
+    segments.append(_seg(f", {vol_num_str}:{pages}, {year}, "))
     segments.append(_seg("doi:"))
     segments.append(_seg(doi, url=f"https://doi.org/{doi}"))
 
@@ -330,12 +335,10 @@ def validate_entry(entry) -> None:
         Parsed bib entry to validate.
     """
     cite_key = entry.key
-    required = ["author", "title", "journal", "year", "volume", "pages", "doi"]
-    for field in required:
-        if entry.fields_dict.get(field) is None:
-            print(f"WARNING: missing {field} in {cite_key}", file=sys.stderr)
-    if entry.fields_dict.get("number") is None:
-        print(f"WARNING: missing number in {cite_key}", file=sys.stderr)
+    required = ["author", "title", "journal", "year", "volume", "number", "pages", "doi"]
+    missing = [f for f in required if entry.fields_dict.get(f) is None]
+    if missing:
+        print(f"WARNING: missing [{', '.join(missing)}] in {cite_key}", file=sys.stderr)
     author_val = entry.fields_dict.get("author")
     if author_val and "others" in str(author_val.value).lower():
         print(f"WARNING: author list truncated with 'others' in {cite_key}", file=sys.stderr)
