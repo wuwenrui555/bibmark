@@ -37,6 +37,7 @@ generate_citations(
     },
     superscript=True,
     output_dir=output_dir,
+    continuous_numbering=True,
 )
 
 print(f"Done. Output files are in /{output_dir.relative_to(project_root)}")
