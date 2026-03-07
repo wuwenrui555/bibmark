@@ -76,8 +76,8 @@ sections = [
 在格式化之前，`core.py` 对每个 entry 调用一次 `validate_entry()`，集中打印所有
 warning，避免重复：
 
-- 缺少必填字段（`author`、`title`、`journal`、`year`、`volume`、`pages`、`doi`）→ warning
-- 缺少 `number` 字段 → warning（该字段可选，缺少时输出中不显示括号部分）
+- 缺少必填字段（`author`、`title`、`journal`、`year`、`volume`、`pages`、`doi`）→ warning，输出中以 `Unknown` 占位
+- 缺少 `number` 字段 → 仅当 `volume` 同时缺失时才有影响：`volume` 存在时静默省略 `number`；`volume` 缺失时输出 `Unknown(Unknown)`
 - author 列表以 `others` 结尾（截断列表）→ warning
 
 ---
@@ -119,7 +119,7 @@ warning，避免重复：
 | 函数 | 作用 |
 |------|------|
 | `_strip_braces(value)` | 去除 LaTeX 保护花括号，如 `{{China}}` → `China` |
-| `_get_field(entry, key, cite_key)` | 取字段值（已去花括号），缺少时返回 `"???"` |
+| `_get_field(entry, key, cite_key)` | 取字段值（已去花括号），缺少时返回 `"Unknown"` |
 | `_format_pages(pages)` | 把 `--` 替换为 en-dash `–` |
 | `_split_authors(author_str)` | 按 ` and ` 切开作者列表 |
 | `_normalize_author(author)` | `"Wu, Wenrui"` → `"Wenrui Wu"` |

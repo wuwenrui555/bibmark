@@ -4,7 +4,7 @@ Generate formatted citation lists (Word, Markdown, LaTeX) from a `.bib` file,
 with support for custom author-role annotations (co-first, corresponding, etc.).
 
 **[→ View Wenrui's Bibliography](examples/wenrui_wu/output/citations.md)**
-
+**[→ View Zhangxin's Bibliography](examples/zhangxin_zhao/output/citations.md) ❤️️**
 **[→ View Boyan's Bibliography](examples/boyan_wang/output/citations.md)**
 
 ## Table of Contents
@@ -128,8 +128,8 @@ in the `.bib` file.
 
 | Field | Required | Behaviour if missing |
 | ----- | -------- | -------------------- |
-| `author`, `title`, `journal`, `year`, `volume`, `pages`, `doi` | Yes | Warning printed, `???` in output |
-| `number` | No | Warning printed, omitted from output |
+| `author`, `title`, `journal`, `year`, `volume`, `pages`, `doi` | Yes | Warning printed, `Unknown` in output |
+| `number` | Only when `volume` is missing | When `volume` is present, `number` is silently omitted; when `volume` is missing, `Unknown(Unknown)` is shown |
 | `bibmark` | No | No annotations applied |
 
 LaTeX protective braces (e.g. `{{China}}`) are automatically stripped from all
