@@ -81,8 +81,8 @@ sections = [
 Before formatting, `core.py` calls `validate_entry()` once per entry to print
 all warnings in one place and avoid duplicates:
 
-- Missing required fields (`author`, `title`, `journal`, `year`, `volume`, `pages`, `doi`) → warning
-- Missing `number` field → warning (optional field; the `(number)` part is simply omitted from output)
+- Missing required fields (`author`, `title`, `journal`, `year`, `volume`, `pages`, `doi`) → warning; placeholder `Unknown` used in output
+- Missing `number` field → only a concern when `volume` is also missing; if `volume` is present, `number` is silently omitted; if `volume` is absent, `Unknown(Unknown)` is shown for the volume/number part
 - Author list ending with `others` (truncated list) → warning
 
 ---
@@ -125,7 +125,7 @@ A full citation is a list of Segments, for example:
 | Function | Purpose |
 |----------|---------|
 | `_strip_braces(value)` | Remove LaTeX protective braces, e.g. `{{China}}` → `China` |
-| `_get_field(entry, key, cite_key)` | Retrieve a field value (braces stripped); returns `"???"` if absent |
+| `_get_field(entry, key, cite_key)` | Retrieve a field value (braces stripped); returns `"Unknown"` if absent |
 | `_format_pages(pages)` | Replace `--` with an en-dash `–` |
 | `_split_authors(author_str)` | Split author string on ` and ` |
 | `_normalize_author(author)` | `"Wu, Wenrui"` → `"Wenrui Wu"` |
