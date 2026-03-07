@@ -4,7 +4,9 @@ Generate formatted citation lists (Word, Markdown, LaTeX) from a `.bib` file,
 with support for custom author-role annotations (co-first, corresponding, etc.).
 
 **[→ View Wenrui's Bibliography](examples/wenrui_wu/output/citations.md)**
+
 **[→ View Zhangxin's Bibliography](examples/zhangxin_zhao/output/citations.md) ❤️️**
+
 **[→ View Boyan's Bibliography](examples/boyan_wang/output/citations.md)**
 
 ## Table of Contents
@@ -78,7 +80,7 @@ This generates `output/citations.docx`, `output/citations.md`, and `output/citat
 ### Grouped output
 
 Pass a `dict` instead of a `list` to group citations under section headings.
-Each key becomes a level-2 heading; numbering restarts from 1 within each section.
+Each key becomes a level-2 heading. Use `continuous_numbering=True` to number citations globally across all sections, or leave it at the default `False` to restart from 1 within each section.
 
 ```python
 generate_citations(
@@ -91,6 +93,7 @@ generate_citations(
     my_name="Wenrui Wu",
     annotation_map={"first": "#", "corresponding": "*"},
     output_dir="output",
+    continuous_numbering=True,
 )
 ```
 
@@ -129,7 +132,7 @@ in the `.bib` file.
 | Field | Required | Behaviour if missing |
 | ----- | -------- | -------------------- |
 | `author`, `title`, `journal`, `year`, `volume`, `pages`, `doi` | Yes | Warning printed, `Unknown` in output |
-| `number` | Only when `volume` is missing | When `volume` is present, `number` is silently omitted; when `volume` is missing, `Unknown(Unknown)` is shown |
+| `number` | No (always warned if missing) | When `volume` is present, omitted from output; when `volume` is missing, `Unknown(Unknown)` is shown for the volume/number part |
 | `bibmark` | No | No annotations applied |
 
 LaTeX protective braces (e.g. `{{China}}`) are automatically stripped from all

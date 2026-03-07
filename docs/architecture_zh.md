@@ -77,7 +77,7 @@ sections = [
 warning，避免重复：
 
 - 缺少必填字段（`author`、`title`、`journal`、`year`、`volume`、`pages`、`doi`）→ warning，输出中以 `Unknown` 占位
-- 缺少 `number` 字段 → 仅当 `volume` 同时缺失时才有影响：`volume` 存在时静默省略 `number`；`volume` 缺失时输出 `Unknown(Unknown)`
+- 缺少 `number` 字段 → 总是 warning；`volume` 存在时输出中静默省略；`volume` 同时缺失时，volume/number 部分渲染为 `Unknown(Unknown)`
 - author 列表以 `others` 结尾（截断列表）→ warning
 
 ---

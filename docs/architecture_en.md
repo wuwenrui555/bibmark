@@ -82,7 +82,7 @@ Before formatting, `core.py` calls `validate_entry()` once per entry to print
 all warnings in one place and avoid duplicates:
 
 - Missing required fields (`author`, `title`, `journal`, `year`, `volume`, `pages`, `doi`) → warning; placeholder `Unknown` used in output
-- Missing `number` field → only a concern when `volume` is also missing; if `volume` is present, `number` is silently omitted; if `volume` is absent, `Unknown(Unknown)` is shown for the volume/number part
+- Missing `number` field → always warned; omitted from output when `volume` is present; when `volume` is also missing, the volume/number part renders as `Unknown(Unknown)`
 - Author list ending with `others` (truncated list) → warning
 
 ---
